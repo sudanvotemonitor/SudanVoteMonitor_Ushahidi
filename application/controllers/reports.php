@@ -563,7 +563,7 @@ class Reports_Controller extends Main_Controller {
 		$this->template->content->errors = $errors;
 		$this->template->content->form_error = $form_error;
 
-		$categories = $this->get_categories($form['incident_category']);
+		$categories = $this->_get_categories($form['incident_category']);
 		$this->template->content->categories = $categories;
 
 		// Retrieve Custom Form Fields Structure
@@ -881,13 +881,13 @@ class Reports_Controller extends Main_Controller {
 		$this->themes->js->incident_photos = $incident_photo;
 
 		// Initialize custom field array
-
-		$form_field_names = $this->_get_custom_form_fields($id,$incident->form_id,false);
+		$this->template->content->custom_forms = new View('reports_custom_forms');
+		$form_field_names = $this->_get_custom_form_fields($id,$incident->form_id,false,true);
+		$this->template->content->custom_forms->form_field_names = $form_field_names;
 
 		// Retrieve Custom Form Fields Structure
-
-		$disp_custom_fields = $this->_get_custom_form_fields($id,$incident->form_id,true);
-		$this->template->content->disp_custom_fields = $disp_custom_fields;
+		$disp_custom_fields = $this->_get_custom_form_fields($id,$incident->form_id,true,true);
+		$this->template->content->custom_forms->disp_custom_fields = $disp_custom_fields;
 
 		// Are we allowed to submit comments?
 		$this->template->content->comments_form = "";
@@ -895,7 +895,6 @@ class Reports_Controller extends Main_Controller {
 		{
 			$this->template->content->comments_form = new View('reports_comments_form');
 			$this->template->content->comments_form->form = $form;
-			$this->template->content->comments_form->form_field_names = $form_field_names;
 			$this->template->content->comments_form->captcha = $captcha;
 			$this->template->content->comments_form->errors = $errors;
 			$this->template->content->comments_form->form_error = $form_error;
@@ -1047,6 +1046,21 @@ class Reports_Controller extends Main_Controller {
 	}
 
 	/**
+	 * Retrieves Categories
+	 */
+	private function _get_categories($selected_categories)
+	{
+		$categories = ORM::factory('category')
+			->where('category_visible', '1')
+			->where('parent_id', '0')
+			->where('category_trusted != 1')
+			->orderby('category_title', 'ASC')
+			->find_all();
+
+		return $categories;
+	}
+
+	/**
 	 * Retrieves Total Rating For Specific Post
 	 * Also Updates The Incident & Comment Tables (Ratings Column)
 	 */
@@ -1127,15 +1141,24 @@ class Reports_Controller extends Main_Controller {
 	 * @param int $form_id The unique form_id. Uses default form (1), if none selected
 	 * @param bool $field_names_only Whether or not to include just fields names, or field names + data
 	 * @param bool $data_only Whether or not to include just data
+	 * @param bool $public Whether or not to include only public form fields 
 	 */
-	private function _get_custom_form_fields($incident_id = false, $form_id = 1, $data_only = false)
+	private function _get_custom_form_fields($incident_id = false, $form_id = 1, $data_only = false, $public = false)
 	{
 		$fields_array = array();
 
 		if (!$form_id)
 			$form_id = 1;
-
-		$custom_form = ORM::factory('form', $form_id)->orderby('field_position','asc');
+	
+		//added by george to only pull public forms if set in function call
+		if ($public)
+		{
+			$custom_form = ORM::factory('form', $form_id)->where('field_ispublic',1)->orderby('field_position','asc');
+		}
+		else
+		{
+			$custom_form = ORM::factory('form', $form_id)->orderby('field_position','asc');
+		}
 
 		foreach ($custom_form->form_field as $custom_formfield)
 		{
