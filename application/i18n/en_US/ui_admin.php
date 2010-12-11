@@ -91,6 +91,7 @@
 	'invalid_parameter' => 'Invalid Parameter',
 	'ip_address' => 'IP Address',
 	'is_date' => 'Is this a Date Field?',
+	'is_public' => 'Make this Field Public?',
 	'label_email' => 'Email Address:',
 	'label_full_name' => 'Full Name:',
 	'label_password' => 'Password:',

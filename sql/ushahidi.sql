@@ -1122,6 +1122,7 @@ CREATE TABLE IF NOT EXISTS `form_field` (                                       
     `field_width` smallint(6) NOT NULL default '0',                                 -- field description
     `field_height` tinyint(4) default '5',                                          -- field description
     `field_isdate` tinyint(4) NOT NULL default '0',                                 -- field description
+    `field_ispublic` tinyint(4) NOT NULL default '0',                               -- field description
   PRIMARY KEY  (`id`),
   KEY `fk_form_id` (`form_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

@@ -58,6 +58,11 @@
 		<div class="report-description-text">
 			<h5><?php echo Kohana::lang('ui_main.reports_description');?></h5>
 			<?php echo $incident_description; ?>
+			
+			<?php
+				echo $custom_forms;
+			?>
+
 			<div class="credibility">
 				<table class="rating-table" cellspacing="0" cellpadding="0" border="0">
           <tr>
@@ -70,7 +75,7 @@
         </table>
 			</div>
 		</div>
-		
+	
 		<?php
 			// Filter::comments_block - The block that contains posted comments
 			Event::run('ushahidi_filter.comment_block', $comments);

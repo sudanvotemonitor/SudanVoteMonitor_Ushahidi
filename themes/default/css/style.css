@@ -660,6 +660,30 @@ div.report-description-text h5 {
 	text-transform: capitalize;
 }
 
+div.report-custom-forms-text {
+    border-top:1px dotted #C0C2B8;
+    padding:10px 0;
+    margin-top:10px;
+}
+
+div.report-custom-forms-row {
+    padding-top: 5px;
+}
+
+div.report-custom-forms-text h5 {
+    padding:0px 0px 5px 0px;
+    margin:0px;
+    font-size:14px;
+    text-transform: capitalize;
+}
+
+div.report-custom-forms-text strong {
+    padding:0px 0px 5px 0px;
+    margin:0px;
+    font-size:14px;
+    text-transform: capitalize;
+}
+
 div.credibility {
 	margin-top:10px;
 	padding:3px;
