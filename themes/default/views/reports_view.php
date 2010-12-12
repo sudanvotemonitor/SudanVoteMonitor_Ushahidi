@@ -62,7 +62,7 @@
 			<?php
 				echo $custom_forms;
 			?>
-
+		
 			<div class="credibility">
 				<table class="rating-table" cellspacing="0" cellpadding="0" border="0">
           <tr>
@@ -77,6 +77,11 @@
 		</div>
 	
 		<?php
+		?>	
+		<?php
+			// Action::report_extra - Allows you to target an individual report right after the description
+			Event::run('ushahidi_action.report_extra', $incident_id);
+
 			// Filter::comments_block - The block that contains posted comments
 			Event::run('ushahidi_filter.comment_block', $comments);
 			echo $comments;
