@@ -389,7 +389,7 @@ class Reports_Controller extends Admin_Controller
         $form['incident_minute'] = date('i');
         $form['incident_ampm'] = date('a');
         // initialize custom field array
-        $form['custom_field'] = $this->_get_custom_form_fields($id,'',true);
+        $form['custom_field'] = customforms::get_custom_form_fields($id,'',true,0,0);
 
 
         // Locale (Language) Array
@@ -974,7 +974,7 @@ class Reports_Controller extends Admin_Controller
                         'person_first' => $incident->incident_person->person_first,
                         'person_last' => $incident->incident_person->person_last,
                         'person_email' => $incident->incident_person->person_email,
-                        'custom_field' => $this->_get_custom_form_fields($id,$incident->form_id,true),
+                        'custom_field' => customforms::get_custom_form_fields($id,$incident->form_id,true,0,0),
                         'incident_active' => $incident->incident_active,
                         'incident_verified' => $incident->incident_verified,
                         'incident_source' => $incident->incident_source,
@@ -1000,8 +1000,11 @@ class Reports_Controller extends Admin_Controller
         $this->template->content->form_saved = $form_saved;
 
         // Retrieve Custom Form Fields Structure
-        $disp_custom_fields = $this->_get_custom_form_fields($id,$form['form_id'],false);
-        $this->template->content->disp_custom_fields = $disp_custom_fields;
+		$this->template->content->custom_forms = new View('reports_submit_custom_forms');
+        $disp_custom_fields = customforms::get_custom_form_fields($id,$form['form_id'],false,0,0);
+        $this->template->content->custom_forms->disp_custom_fields = $disp_custom_fields;
+		$this->template->content->custom_forms->form = $form;
+
 
         // Retrieve Previous & Next Records
         $previous = ORM::factory('incident')->where('id < ', $id)->orderby('id','desc')->find();
@@ -1689,7 +1692,7 @@ class Reports_Controller extends Admin_Controller
      * @param bool $field_names_only Whether or not to include just fields names, or field names + data
      * @param bool $data_only Whether or not to include just data
      */
-    private function _get_custom_form_fields($incident_id = false, $form_id = 1, $data_only = false)
+    /*private function _get_custom_form_fields($incident_id = false, $form_id = 1, $data_only = false)
     {
         $fields_array = array();
 
@@ -1731,6 +1734,7 @@ class Reports_Controller extends Admin_Controller
         return $fields_array;
     }
 
+*/
 
     /**
      * Validate Custom Form Fields
