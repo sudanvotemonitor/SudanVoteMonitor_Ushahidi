@@ -295,15 +295,15 @@ class Reports_Controller extends Main_Controller {
 		$form['incident_minute'] = "00";
 		$form['incident_ampm'] = "pm";
 		// initialize custom field array
-		$form['custom_field'] = $this->_get_custom_form_fields($id,'',true);
-		//GET custom forms
-		$forms = array();
+		$form['custom_field'] = customforms::get_custom_form_fields($id,'',true,1,1);
+		//GET custom forms <-- pretty sure this is useless - george
+		/*$forms = array();
 		foreach (ORM::factory('form')->find_all() as $custom_forms)
 		{
 			$forms[$custom_forms->id] = $custom_forms->form_title;
 		}
 		$this->template->content->forms = $forms;
-
+		*/
 
 		// check, has the form been submitted, if so, setup validation
 		if ($_POST)
@@ -567,8 +567,11 @@ class Reports_Controller extends Main_Controller {
 		$this->template->content->categories = $categories;
 
 		// Retrieve Custom Form Fields Structure
-		$disp_custom_fields = $this->_get_custom_form_fields($id,$form['form_id'],false);
+		$this->template->content->custom_forms = new View('reports_submit_custom_forms');
+		$disp_custom_fields = customforms::get_custom_form_fields($id,$form['form_id'],false,1,1);
 		$this->template->content->disp_custom_fields = $disp_custom_fields;
+		$this->template->content->custom_forms->disp_custom_fields = $disp_custom_fields;
+		$this->template->content->custom_forms->form = $form;
 
 		// Javascript Header
 		$this->themes->map_enabled = TRUE;
@@ -881,12 +884,12 @@ class Reports_Controller extends Main_Controller {
 		$this->themes->js->incident_photos = $incident_photo;
 
 		// Initialize custom field array
-		$this->template->content->custom_forms = new View('reports_custom_forms');
-		$form_field_names = $this->_get_custom_form_fields($id,$incident->form_id,false,true);
+		$this->template->content->custom_forms = new View('reports_view_custom_forms');
+		$form_field_names = customforms::get_custom_form_fields($id,$incident->form_id,false,1,0);
 		$this->template->content->custom_forms->form_field_names = $form_field_names;
 
 		// Retrieve Custom Form Fields Structure
-		$disp_custom_fields = $this->_get_custom_form_fields($id,$incident->form_id,true,true);
+		$disp_custom_fields =customforms::get_custom_form_fields($id,$incident->form_id,true,1,0);
 		$this->template->content->custom_forms->disp_custom_fields = $disp_custom_fields;
 
 		// Are we allowed to submit comments?
@@ -1142,7 +1145,7 @@ class Reports_Controller extends Main_Controller {
 	 * @param bool $field_names_only Whether or not to include just fields names, or field names + data
 	 * @param bool $data_only Whether or not to include just data
 	 * @param bool $public Whether or not to include only public form fields 
-	 */
+	 *
 	private function _get_custom_form_fields($incident_id = false, $form_id = 1, $data_only = false, $public = false)
 	{
 		$fields_array = array();
@@ -1157,7 +1160,7 @@ class Reports_Controller extends Main_Controller {
 		}
 		else
 		{
-			$custom_form = ORM::factory('form', $form_id)->orderby('field_position','asc');
+			$custom_form = ORM::factory('form', $form_id)->where('field_ispublic <=',1)->orderby('field_position','asc');
 		}
 
 		foreach ($custom_form->form_field as $custom_formfield)
@@ -1193,7 +1196,7 @@ class Reports_Controller extends Main_Controller {
 		return $fields_array;
 	}
 
-
+*/
 	/**
 	 * Validate Custom Form Fields
 	 * @param array $custom_fields Array

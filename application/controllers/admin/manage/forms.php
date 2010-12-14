@@ -261,7 +261,8 @@ class Forms_Controller extends Admin_Controller
 			$post->add_rules('field_width', 'between[0,300]');
 			$post->add_rules('field_height', 'between[0,50]');
 			$post->add_rules('field_isdate','required', 'between[0,1]');
-			$post->add_rules('field_ispublic','required', 'between[0,1]');
+			$post->add_rules('field_ispublic_visible','required', 'between[0,1]');
+			$post->add_rules('field_ispublic_submit','required', 'between[0,1]');
 			
 			if( $post->validate() )
 			{
@@ -295,7 +296,8 @@ class Forms_Controller extends Admin_Controller
 					$field_form->field_width = $post->field_width;
 					$field_form->field_height = $post->field_height;
 					$field_form->field_isdate = $post->field_isdate;				
-					$field_form->field_ispublic = $post->field_ispublic;				
+					$field_form->field_ispublic_submit = $post->field_ispublic_submit;				
+					$field_form->field_ispublic_visible = $post->field_ispublic_visible;				
 					if($field_form->save())
 					{
 						$field_id = $field_form->id;
@@ -503,7 +505,8 @@ class Forms_Controller extends Admin_Controller
 				$field_height = $field->field_height;
 				$field_maxlength = $field->field_maxlength;
 				$field_isdate = $field->field_isdate;
-				$field_ispublic = $field->field_ispublic;
+				$field_ispublic_visible = $field->field_ispublic_visible;
+				$field_ispublic_submit = $field->field_ispublic_submit;
 			}
 		}
 		else
@@ -516,7 +519,8 @@ class Forms_Controller extends Admin_Controller
 			$field_height = "";
 			$field_maxlength = "";
 			$field_isdate = "0";
-			$field_ispublic = "0";
+			$field_ispublic_visible = "0";
+			$field_ispublic_submit = "0";
 		}
 		
 		$html = "";
@@ -562,19 +566,32 @@ class Forms_Controller extends Admin_Controller
 		}
 		$html .="</div>";
 		// is_public additions by george
+		$visibility_selection = array('0'=>Kohana::lang('ui_admin.visible_admin'), '1'=>Kohana::lang('ui_admin.visible_public'));
 		$html .="<div class=\"forms_item\">"; 
-		$html .="	<strong>".Kohana::lang('ui_admin.is_public')."</strong><br />";
-		if ($field_ispublic != 1)
+		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_submit')."</strong><br />";
+		if ($field_ispublic_submit != 1)
 		{
-			$html .= 	Kohana::lang('ui_admin.yes')." " . form::radio('field_ispublic', '1', FALSE) . "&nbsp;&nbsp;";
-			$html .= 	Kohana::lang('ui_admin.no')." " . form::radio('field_ispublic', '0', TRUE);
+			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'0');
 		}
 		else
 		{
-			$html .= 	Kohana::lang('ui_admin.yes')." " . form::radio('field_ispublic', '1', TRUE) . "&nbsp;&nbsp;";
-			$html .= 	Kohana::lang('ui_admin.no')." " . form::radio('field_ispublic', '0', FALSE);
+			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'1');
 		}
 		$html .="</div>";
+		
+		$html .="<div class=\"forms_item\">"; 
+		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_visible')."</strong><br />";
+		if ($field_ispublic_visible != 1)
+		{
+			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'0');
+		}
+		else
+		{
+			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'1');
+		}
+		$html .="</div>";
+		
+
 		// END is_public additions by george
 		//$html .="<div class=\"forms_item\">"; 
 		//$html .="	<strong>Width:</strong><br />"; 
@@ -611,7 +628,8 @@ class Forms_Controller extends Admin_Controller
 				$field_height = $field->field_height;
 				$field_maxlength = $field->field_maxlength;
 				$field_isdate = $field->field_isdate;
-				$field_ispublic = $field->field_ispublic;
+				$field_ispublic_visible = $field->field_ispublic_visible;
+				$field_ispublic_submit = $field->field_ispublic_submit;
 			}
 		}
 		else
@@ -624,14 +642,16 @@ class Forms_Controller extends Admin_Controller
 			$field_height = "";
 			$field_maxlength = "";
 			$field_isdate = "0";
-			$field_ispublic = "0";
+			$field_ispublic_visible = "0";
+			$field_ispublic_submit = "0";
 		}
 		
 		$html = "";
 		$html .="<input type=\"hidden\" name=\"form_id\" id=\"form_id\" value=\"".$form_id."\">";
-		$html .="<input type=\"hidden\" name=\"field_id\" id=\"field_id\" value=\"\">";
+		$html .="<input type=\"hidden\" name=\"field_id\" id=\"field_id\" value=\"".$field_id."\">";
 		$html .="<input type=\"hidden\" name=\"field_isdate\" id=\"field_id\" value=\"0\">";
-		$html .="<input type=\"hidden\" name=\"field_ispublic\" id=\"field_id\" value=\"0\">";
+		$html .="<input type=\"hidden\" name=\"field_ispublic_visible\" id=\"field_id\" value=\"0\">";
+		$html .="<input type=\"hidden\" name=\"field_ispublic_submit\" id=\"field_id\" value=\"0\">";
 		$html .="<div id=\"form_result_".$form_id."\" class=\"forms_fields_result\"></div>";
 		$html .="<div class=\"forms_item\">"; 
 		$html .="	<strong>".Kohana::lang('ui_admin.field_name').":</strong><br />"; 
@@ -663,18 +683,28 @@ class Forms_Controller extends Admin_Controller
 		$html .= 	form::input('field_height', $field_height, ' class="text short"');
 		$html .="</div>";
 		// is_public additions by george
+		$visibility_selection = array('0'=>Kohana::lang('ui_admin.visible_admin'), '1'=>Kohana::lang('ui_admin.visible_public'));
 		$html .="<div class=\"forms_item\">"; 
-		$html .="	<strong>".Kohana::lang('ui_admin.is_public')."</strong><br />";
-		if ($field_ispublic != 1)
+		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_submit')."</strong><br />";
+		if ($field_ispublic_submit != 1)
 		{
-			$html .= 	Kohana::lang('ui_admin.yes')." " . form::radio('field_ispublic', '1', FALSE) . "&nbsp;&nbsp;";
-			$html .= 	Kohana::lang('ui_admin.no')." " . form::radio('field_ispublic', '0', TRUE);
+			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'0');
 		}
 		else
 		{
-			$html .= 	Kohana::lang('ui_admin.yes')." " . form::radio('field_ispublic', '1', TRUE) . "&nbsp;&nbsp;";
-			$html .= 	Kohana::lang('ui_admin.no')." " . form::radio('field_ispublic', '0', FALSE);
+			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'1');
 		}
+		$html .="</div>";
+		$html .="<div class=\"forms_item\">"; 
+		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_visible')."</strong><br />";
+		if ($field_ispublic_visible != 1)
+		{
+			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'0');
+		}
+		else
+		{
+			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'1');
+		}	
 		$html .="</div>";
 		// END is_public additions by george
 		$html .="<div style=\"clear:both;\"></div>";
@@ -757,7 +787,8 @@ class Forms_Controller extends Admin_Controller
 			$field_position = $field->field_position;
 			$field_type = $field->field_type;
 			$field_isdate = $field->field_isdate;
-			$field_ispublic = $field->field_ispublic;
+			$field_ispublic_visible = $field->field_ispublic_visible;
+			$field_ispublic_submit = $field->field_ispublic_submit;
 			
 			$html .= "<div class=\"forms_fields_item\">";
 			$html .= "	<strong>".$field_name.":</strong><br />";
