@@ -1113,7 +1113,7 @@ CREATE TABLE IF NOT EXISTS `form_field` (                                       
     `id` int(11) NOT NULL auto_increment,                                           -- field description
     `form_id` int(11) NOT NULL default '0',                                         -- field description
     `field_name` varchar(200) default NULL,                                         -- field description
-    `field_type` tinyint(4) NOT NULL default '1' COMMENT '1 - TEXTFIELD, 2 - TEXTAREA (FREETEXT), 3 - DATE, 4 - PASSWORD, 5 - RADIO, 6 - CHECKBOX',    -- field description
+    `field_type` tinyint(4) NOT NULL default '1' COMMENT '1 - TEXTFIELD, 2 - TEXTAREA (FREETEXT), 3 - DATE, 4 - PASSWORD, 5 - RADIO, 6 - CHECKBOX, 7 - DROPDOWN',    -- field description
     `field_required` tinyint(4) default '0',                                        -- field description
     `field_options` text,                                                           -- field description
     `field_position` tinyint(4) NOT NULL default '0',                               -- field description
@@ -1122,7 +1122,8 @@ CREATE TABLE IF NOT EXISTS `form_field` (                                       
     `field_width` smallint(6) NOT NULL default '0',                                 -- field description
     `field_height` tinyint(4) default '5',                                          -- field description
     `field_isdate` tinyint(4) NOT NULL default '0',                                 -- field description
-    `field_ispublic` tinyint(4) NOT NULL default '0',                               -- field description
+    `field_ispublic_visible` tinyint(4) NOT NULL default '0',                       -- field description
+    `field_ispublic_submit` tinyint(4) NOT NULL default '0',                        -- field description
   PRIMARY KEY  (`id`),
   KEY `fk_form_id` (`form_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

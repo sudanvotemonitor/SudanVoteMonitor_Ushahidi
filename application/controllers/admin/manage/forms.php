@@ -143,6 +143,9 @@ class Forms_Controller extends Admin_Controller
 			'' => Kohana::lang('ui_admin.select_field_type'),
 			1 => Kohana::lang('ui_admin.text_field'),
 			2 => Kohana::lang('ui_admin.free_text_field'),
+			5 => Kohana::lang('ui_admin.radio_field'),
+			6 => Kohana::lang('ui_admin.checkbox_field'),
+			7 => Kohana::lang('ui_admin.dropdown_field')
 			// 4 => 'Add Attachments'
 		);
 
@@ -215,6 +218,18 @@ class Forms_Controller extends Admin_Controller
 				case 3:
 		        	$selector_content = $this->_get_selector_date($form_id, $field_id);
 		        	break;
+				case 4:
+		        	$selector_content = $this->_get_selector_multi($form_id, $field_id, $selector_id);
+		        	break;
+				case 5:
+		        	$selector_content = $this->_get_selector_multi($form_id, $field_id, $selector_id);
+		        	break;
+				case 6:
+		        	$selector_content = $this->_get_selector_multi($form_id, $field_id, $selector_id);
+		        	break;
+				case 7:
+		        	$selector_content = $this->_get_selector_multi($form_id, $field_id, $selector_id);
+		        	break;
 			}
 		}
 		echo json_encode(array("status"=>"success", "message"=>$selector_content));
@@ -260,7 +275,7 @@ class Forms_Controller extends Admin_Controller
 			$post->add_rules('field_required','required', 'between[0,1]');
 			$post->add_rules('field_width', 'between[0,300]');
 			$post->add_rules('field_height', 'between[0,50]');
-			$post->add_rules('field_isdate','required', 'between[0,1]');
+			$post->add_rules('field_isdate', 'between[0,1]');
 			$post->add_rules('field_ispublic_visible','required', 'between[0,1]');
 			$post->add_rules('field_ispublic_submit','required', 'between[0,1]');
 			
@@ -484,7 +499,43 @@ class Forms_Controller extends Admin_Controller
 		$return_content = $this->_get_current_fields($form_id);
 		echo json_encode(array("status"=>"success", "response"=>$return_content));
 	}
-	
+
+
+	/**
+	* Generate Public Visible / Submit Dropdown Boxes
+    * @param int $field_ispublic_submit If this can be submitted by anyone
+    * @param int $field_ispublic_submit If answers this can be viewed by anyone
+	*/
+	private function _get_public_state($field_ispublic_submit,$field_ispublic_visible)
+	{
+		// is_public additions by george
+		$visibility_selection = array('0'=>Kohana::lang('ui_admin.visible_admin'), '1'=>Kohana::lang('ui_admin.visible_public'));
+		$html ="<div class=\"forms_item\">"; 
+		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_submit')."</strong><br />";
+		if ($field_ispublic_submit != 1)
+		{
+			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'0');
+		}
+		else
+		{
+			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'1');
+		}
+		$html .="</div>";
+		
+		$html .="<div class=\"forms_item\">"; 
+		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_visible')."</strong><br />";
+		if ($field_ispublic_visible != 1)
+		{
+			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'0');
+		}
+		else
+		{
+			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'1');
+		}
+		$html .="</div>";
+
+		return $html;
+	}
 	
 	/**
 	* Generate Text Field Entry Form
@@ -565,34 +616,10 @@ class Forms_Controller extends Admin_Controller
 			$html .= 	Kohana::lang('ui_admin.no')." " . form::radio('field_isdate', '0', FALSE);
 		}
 		$html .="</div>";
-		// is_public additions by george
-		$visibility_selection = array('0'=>Kohana::lang('ui_admin.visible_admin'), '1'=>Kohana::lang('ui_admin.visible_public'));
-		$html .="<div class=\"forms_item\">"; 
-		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_submit')."</strong><br />";
-		if ($field_ispublic_submit != 1)
-		{
-			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'0');
-		}
-		else
-		{
-			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'1');
-		}
-		$html .="</div>";
-		
-		$html .="<div class=\"forms_item\">"; 
-		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_visible')."</strong><br />";
-		if ($field_ispublic_visible != 1)
-		{
-			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'0');
-		}
-		else
-		{
-			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'1');
-		}
-		$html .="</div>";
-		
 
-		// END is_public additions by george
+		// is_public additions by george
+		$html .= $this->_get_public_state($field_ispublic_submit, $field_ispublic_visible);
+		
 		//$html .="<div class=\"forms_item\">"; 
 		//$html .="	<strong>Width:</strong><br />"; 
 		//$html .= 	form::input('field_width', '', ' class="text short"');
@@ -683,30 +710,7 @@ class Forms_Controller extends Admin_Controller
 		$html .= 	form::input('field_height', $field_height, ' class="text short"');
 		$html .="</div>";
 		// is_public additions by george
-		$visibility_selection = array('0'=>Kohana::lang('ui_admin.visible_admin'), '1'=>Kohana::lang('ui_admin.visible_public'));
-		$html .="<div class=\"forms_item\">"; 
-		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_submit')."</strong><br />";
-		if ($field_ispublic_submit != 1)
-		{
-			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'0');
-		}
-		else
-		{
-			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'1');
-		}
-		$html .="</div>";
-		$html .="<div class=\"forms_item\">"; 
-		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_visible')."</strong><br />";
-		if ($field_ispublic_visible != 1)
-		{
-			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'0');
-		}
-		else
-		{
-			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'1');
-		}	
-		$html .="</div>";
-		// END is_public additions by george
+		$html .= $this->_get_public_state($field_ispublic_submit, $field_ispublic_visible);
 		$html .="<div style=\"clear:both;\"></div>";
 		$html .="<div class=\"forms_item\">";
 		$html .="	<div id=\"form_loading_".$form_id."\" class=\"forms_fields_loading\"></div>";
@@ -718,7 +722,74 @@ class Forms_Controller extends Admin_Controller
 		return $html;
 	}
 	
-	
+	/**
+	* Generate TextArea Field Entry Form
+    * @param int $form_id The id no. of the form
+    * @param int $field_id The id no. of the field
+    */
+	private function _get_selector_multi($form_id = 0, $field_id = "", $type="")
+	{
+		if (is_numeric($field_id))
+		{
+			$field = ORM::factory('form_field', $field_id);
+			if ($field->loaded == true)
+			{
+				$field_name = $field->field_name;
+				$field_default = $field->field_default;
+				$field_required = $field->field_required;
+				$field_ispublic_visible = $field->field_ispublic_visible;
+				$field_ispublic_submit = $field->field_ispublic_submit;
+			}
+		}
+		else
+		{
+			$field_id = "";
+			$field_name = "";
+			$field_default = "";
+			$field_required = "0";
+			$field_ispublic_visible = "0";
+			$field_ispublic_submit = "0";
+		}
+		
+		$html = "";
+		$html .="<input type=\"hidden\" name=\"form_id\" id=\"form_id\" value=\"".$form_id."\">";
+		$html .="<input type=\"hidden\" name=\"field_id\" id=\"field_id\" value=\"".$field_id."\">";
+		$html .="<input type=\"hidden\" name=\"field_ispublic_visible\" id=\"field_id\" value=\"0\">";
+		$html .="<input type=\"hidden\" name=\"field_ispublic_submit\" id=\"field_id\" value=\"0\">";
+		$html .="<div id=\"form_result_".$form_id."\" class=\"forms_fields_result\"></div>";
+		$html .="<div class=\"forms_item\">"; 
+		$html .="	<strong>".Kohana::lang('ui_admin.field_name').":</strong><br />"; 
+		$html .= 	form::input('field_name', $field_name, ' class="text"');
+		$html .="</div>"; 
+		$html .="<div class=\"forms_item\">"; 
+		$html .="	<strong>".Kohana::lang('ui_admin.field_default')."?:</strong><br />"; 
+		$html .= 	form::textarea('field_default', $field_default, ' class="text"');
+		$html .="</div>"; 
+		$html .="<div class=\"forms_item\">"; 
+		$html .="	<strong>".Kohana::lang('ui_admin.required')."?</strong><br />"; 
+		if ($field_required != 1)
+		{
+			$html .= 	Kohana::lang('ui_admin.yes')." " . form::radio('field_required', '1', FALSE) . "&nbsp;&nbsp;";
+			$html .= 	Kohana::lang('ui_admin.no')." " . form::radio('field_required', '0', TRUE);
+		}
+		else
+		{
+			$html .= 	Kohana::lang('ui_admin.yes')." " . form::radio('field_required', '1', TRUE) . "&nbsp;&nbsp;";
+			$html .= 	Kohana::lang('ui_admin.no')." " . form::radio('field_required', '0', FALSE);
+		}
+		$html .="</div>";
+		// is_public additions by george
+		$html .= $this->_get_public_state($field_ispublic_submit, $field_ispublic_visible);
+		$html .="<div style=\"clear:both;\"></div>";
+		$html .="<div class=\"forms_item\">";
+		$html .="	<div id=\"form_loading_".$form_id."\" class=\"forms_fields_loading\"></div>";
+		$html .="	<input type=\"image\" src=\"".url::base()."media/img/admin/btn-save.gif\" />";
+		$html .="</div>";
+		$html .="<div style=\"clear:both;\"></div>";
+		$html .=$this->_get_selector_js($form_id);
+		
+		return $html;
+	}
 	/**
 	* Generate Field Entry Form Javascript
 	* For Ajax Requests
