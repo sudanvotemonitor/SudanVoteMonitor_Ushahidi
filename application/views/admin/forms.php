@@ -148,6 +148,36 @@
 									{
 										$form_fields .= form::textarea("custom_".$field_id, '');
 									}
+									elseif ($field_type >= 5 && $field_type <= 7)
+									{
+										$defaults = explode('::',$field_default);
+										$default = 0;
+										if(isset($defaults[1])){
+										    $default = $defaults[1];
+										}
+										$options = explode(',',$defaults[0]);
+										
+										switch ($field_type){
+											case 5:
+												foreach($options as $option){
+													if($option == $default){
+														$set_default = TRUE;	
+													}else{
+														$set_default = FALSE;	
+													}
+													$form_fields .= form::label("custom_".$field_id," ".$option." ");
+													$form_fields .= form::radio("custom_".$field_id,$option,$set_default);
+												}
+												break;
+											case 6:
+												$form_fields .= form::dropdown("custom_".$field_id,$options,$default);
+												break;
+											case 7:
+												$form_fields .= form::dropdown("custom_".$field_id,$options,$default);
+												break;
+
+										}
+									}
 									if ($field_isdate == 1) 
 									{
 										$form_fields .= "&nbsp;<a href=\"#\"><img src = \"".url::base()."media/img/icon-calendar.gif\"  align=\"middle\" border=\"0\"></a>";
