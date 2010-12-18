@@ -295,7 +295,7 @@ class Reports_Controller extends Main_Controller {
 		$form['incident_minute'] = "00";
 		$form['incident_ampm'] = "pm";
 		// initialize custom field array
-		$form['custom_field'] = customforms::get_custom_form_fields($id,'',true,1,1);
+		$form['custom_field'] = customforms::get_custom_form_fields($id,'',true,0,1);
 		//GET custom forms <-- pretty sure this is useless - george
 		/*$forms = array();
 		foreach (ORM::factory('form')->find_all() as $custom_forms)
@@ -568,7 +568,7 @@ class Reports_Controller extends Main_Controller {
 
 		// Retrieve Custom Form Fields Structure
 		$this->template->content->custom_forms = new View('reports_submit_custom_forms');
-		$disp_custom_fields = customforms::get_custom_form_fields($id,$form['form_id'],false,1,1);
+		$disp_custom_fields = customforms::get_custom_form_fields($id,$form['form_id'],false,0,1);
 		$this->template->content->disp_custom_fields = $disp_custom_fields;
 		$this->template->content->custom_forms->disp_custom_fields = $disp_custom_fields;
 		$this->template->content->custom_forms->form = $form;

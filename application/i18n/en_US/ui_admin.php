@@ -72,6 +72,7 @@
 	'form_not_exists' => 'That Form Does Not Exist!',
 	'forum' => 'Forum',
 	'free_text_field' => 'Text Area Field (Free Text)',
+	'date_field' => 'Date Field',
 	'radio_field' => 'Radio Buttons Field',
 	'checkbox_field' => 'Checkboxes Field',
 	'dropdown_field' => 'Dropdown Field',

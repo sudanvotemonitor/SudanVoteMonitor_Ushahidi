@@ -117,79 +117,8 @@
 								$form_title = $form->form_title;
 								$form_description = $form->form_description;
 								$form_active = $form->form_active;
-								
-								$fields = ORM::factory('form_field')
-									->where('form_id', $form_id)
-									->orderby('field_position', 'asc')
-									->orderby('id', 'asc')
-									->find_all();
-
-								$form_fields = "<form action=\"\">";
-								foreach ($fields as $field)
-								{
-									$field_id = $field->id;
-									$field_name = $field->field_name;
-									$field_default = $field->field_default;
-									$field_required = $field->field_required;
-									$field_width = $field->field_width;
-									$field_height = $field->field_height;
-									$field_maxlength = $field->field_maxlength;
-									$field_position = $field->field_position;
-									$field_type = $field->field_type;
-									$field_isdate = $field->field_isdate;
-
-									$form_fields .= "<div class=\"forms_fields_item\">";
-									$form_fields .= "	<strong>".$field_name.":</strong><br />";
-									if ($field_type == 1)
-									{
-										$form_fields .= form::input("custom_".$field_id, '', '');
-									}
-									elseif ($field_type == 2)
-									{
-										$form_fields .= form::textarea("custom_".$field_id, '');
-									}
-									elseif ($field_type >= 5 && $field_type <= 7)
-									{
-										$defaults = explode('::',$field_default);
-										$default = 0;
-										if(isset($defaults[1])){
-										    $default = $defaults[1];
-										}
-										$options = explode(',',$defaults[0]);
-										
-										switch ($field_type){
-											case 5:
-												foreach($options as $option){
-													if($option == $default){
-														$set_default = TRUE;	
-													}else{
-														$set_default = FALSE;	
-													}
-													$form_fields .= form::label("custom_".$field_id," ".$option." ");
-													$form_fields .= form::radio("custom_".$field_id,$option,$set_default);
-												}
-												break;
-											case 6:
-												$form_fields .= form::dropdown("custom_".$field_id,$options,$default);
-												break;
-											case 7:
-												$form_fields .= form::dropdown("custom_".$field_id,$options,$default);
-												break;
-
-										}
-									}
-									if ($field_isdate == 1) 
-									{
-										$form_fields .= "&nbsp;<a href=\"#\"><img src = \"".url::base()."media/img/icon-calendar.gif\"  align=\"middle\" border=\"0\"></a>";
-									}
-									$form_fields .= "	<div class=\"forms_fields_edit\">
-									<a href=\"javascript:fieldAction('e','EDIT',".$field_id.",".$form_id.",".$field_type.");\">EDIT</a>&nbsp;|&nbsp;
-									<a href=\"javascript:fieldAction('d','DELETE',".$field_id.",".$form_id.",".$field_type.");\">DELETE</a>&nbsp;|&nbsp;
-									<a href=\"javascript:fieldAction('mu','MOVE',".$field_id.",".$form_id.",".$field_type.");\">MOVE UP</a>&nbsp;|&nbsp;
-									<a href=\"javascript:fieldAction('md','MOVE',".$field_id.",".$form_id.",".$field_type.");\">MOVE DOWN</a></div>";
-									$form_fields .= "</div>";
-								}
-								$form_fields .= "</form>";
+								$form_fields =  customforms::get_current_fields($form_id);
+						
 								?>
 								<?php print form::open(NULL,array('id' => 'form_action_' . $form_id,
 								 	'name' => 'form_action_' . $form_id )); ?>

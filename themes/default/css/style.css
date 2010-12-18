@@ -1313,6 +1313,9 @@ label.error {
 	float:left;
 	margin-right:10px;
 }
+.report_row input.custom_text, .textarea {
+	width:90%;
+}
 .report_category {
 	clear:both;
 	overflow:hidden;
