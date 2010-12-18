@@ -25,7 +25,7 @@ class customforms_Core {
 		if (!$form_id)
 			$form_id = 1;
 	
-		//added by george to only pull public forms if set in function call
+		//added by george to only pull public forma if set in function call
 		$public_state = array('field_ispublic_visible >='=>$public_visible, 'field_ispublic_submit >='=>$public_submit);
 		$custom_form = ORM::factory('form', $form_id)->where($public_state)->orderby('field_position','asc');
 		
@@ -49,6 +49,7 @@ class customforms_Core {
 					'field_id' => $custom_formfield->id,
 					'field_name' => $custom_formfield->field_name,
 					'field_type' => $custom_formfield->field_type,
+					'field_default' => $custom_formfield->field_default,
 					'field_required' => $custom_formfield->field_required,
 					'field_maxlength' => $custom_formfield->field_maxlength,
 					'field_height' => $custom_formfield->field_height,
@@ -94,5 +95,127 @@ class customforms_Core {
 		return true;
 	}
 
+    /**
+    * Generate list of currently created Form Fields
+    * @param int $form_id The id no. of the form
+    */
+    public function get_current_fields($form_id = 0)
+    {  
+		$fields = ORM::factory('form_field')
+			->where('form_id', $form_id)
+			->orderby('field_position', 'asc')
+			->orderby('id', 'asc')
+			->find_all();
 
+		$form_fields = "<form action=\"\">";
+		foreach ($fields as $field)
+		{
+			$field_id = $field->id;
+			$field_name = $field->field_name;
+			$field_default = $field->field_default;
+			$field_required = $field->field_required;
+			$field_width = $field->field_width;
+			$field_height = $field->field_height;
+			$field_maxlength = $field->field_maxlength;
+			$field_position = $field->field_position;
+			$field_type = $field->field_type;
+			$field_isdate = $field->field_isdate;
+			$field_ispublic_visible = $field->field_ispublic_visible;
+			$field_ispublic_submit = $field->field_ispublic_submit;
+
+			$form_fields .= "<div class=\"forms_fields_item\">";
+			$form_fields .= "	<strong>".$field_name.":</strong><br />";
+			if ($field_type == 1)
+			{
+				$form_fields .= form::input("custom_".$field_id, '', '');
+			}
+			elseif ($field_type == 2)
+			{
+				$form_fields .= form::textarea("custom_".$field_id, '');
+			}
+			elseif ($field_type == 3)
+			{
+            	$form_fields .= "<script type=\"text/javascript\">
+                	$(document).ready(function() {
+                	$(\"#custom_".$field_id."\").datepicker({ 
+                	showOn: \"both\", 
+       	        	 buttonImage: \"" . url::base() . "media/img/icon-calendar.gif\", 
+       	         	buttonImageOnly: true 
+        	        });
+    	            });
+		            </script>";
+				$form_fields .= form::input("custom_".$field_id, '', '');
+			}
+			elseif ($field_type >= 5 && $field_type <= 7)
+			{
+				$defaults = explode('::',$field_default);
+				$default = 0;
+				if(isset($defaults[1])){
+					$default = $defaults[1];
+			}
+				$options = explode(',',$defaults[0]);
+				
+				switch ($field_type){
+					case 5:
+						foreach($options as $option){
+							if($option == $default){
+								$set_default = TRUE;	
+							}else{
+								$set_default = FALSE;	
+							}
+							$form_fields .= form::label("custom_".$field_id," ".$option." ");
+							$form_fields .= form::radio("custom_".$field_id,$option,$set_default);
+						}
+						break;
+					case 6:
+							$multi_defaults = explode(',',$default);
+								foreach($options as $option){
+							$set_default = FALSE;	
+							foreach($multi_defaults as $def){
+								if($option == $def)
+									$set_default = TRUE;	
+							}
+							$form_fields .= form::label("custom_".$field_id," ".$option." ");
+							$form_fields .= form::checkbox("custom_".$field_id,$option,$set_default);
+						}
+						break;
+					case 7:
+						$form_fields .= form::dropdown("custom_".$field_id,$options,$default);
+						break;
+
+				}
+			}
+			/*if ($field_isdate == 1) 
+			{
+				$form_fields .= "&nbsp;<a href=\"#\"><img src = \"".url::base()."media/img/icon-calendar.gif\"  align=\"middle\" border=\"0\"></a>";
+			}*/
+				
+			$visibility = Kohana::lang('ui_admin.visible_admin');
+			if($field_ispublic_visible)
+				$visibility = Kohana::lang('ui_admin.visible_public');
+
+			$submitability = Kohana::lang('ui_admin.visible_admin');
+			if($field_ispublic_submit)
+				$submitability = Kohana::lang('ui_admin.visible_public');
+
+			$isrequired = Kohana::lang('ui_admin.no');
+			if($field_required)
+				$isrequired = Kohana::lang('ui_admin.yes');
+
+			$form_fields .= "	<div class=\"forms_fields_edit\">
+			<a href=\"javascript:fieldAction('e','EDIT',".$field_id.",".$form_id.",".$field_type.");\">EDIT</a>&nbsp;|&nbsp;
+			<a href=\"javascript:fieldAction('d','DELETE',".$field_id.",".$form_id.",".$field_type.");\">DELETE</a>&nbsp;|&nbsp;
+			<a href=\"javascript:fieldAction('mu','MOVE',".$field_id.",".$form_id.",".$field_type.");\">MOVE UP</a>&nbsp;|&nbsp;
+			<a href=\"javascript:fieldAction('md','MOVE',".$field_id.",".$form_id.",".$field_type.");\">MOVE DOWN</a>&nbsp;|&nbsp;
+			". Kohana::lang('ui_admin.required').": ".$isrequired."&nbsp;|&nbsp;
+			". Kohana::lang('ui_main.reports_btn_submit').": ".$submitability."&nbsp;|&nbsp;
+			". Kohana::lang('ui_main.view').": ".$visibility."
+			</div>";
+			$form_fields .= "</div>";
+		}
+		$form_fields .= "</form>";
+	
+		return $form_fields;
+	}
 }
+
