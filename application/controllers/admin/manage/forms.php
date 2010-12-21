@@ -277,8 +277,8 @@ class Forms_Controller extends Admin_Controller
 			$post->add_rules('field_width', 'between[0,300]');
 			$post->add_rules('field_height', 'between[0,50]');
 			$post->add_rules('field_isdate', 'between[0,1]');
-			$post->add_rules('field_ispublic_visible','required', 'between[0,1]');
-			$post->add_rules('field_ispublic_submit','required', 'between[0,1]');
+			$post->add_rules('field_ispublic_visible','required', 'numeric');
+			$post->add_rules('field_ispublic_submit','required', 'numeric');
 			
 			if( $post->validate() )
 			{
@@ -340,7 +340,7 @@ class Forms_Controller extends Admin_Controller
 					
 
 					$field_add_status = "success";
-					$field_add_response = rawurlencode(customforms::get_current_fields($form_id));
+					$field_add_response = rawurlencode(customforms::get_current_fields($form_id,$this->user));
 				}
 				else
 				{
@@ -403,7 +403,7 @@ class Forms_Controller extends Admin_Controller
 		if (is_numeric($field_id) && is_numeric($form_id))
 		{
 			ORM::factory('form_field')->delete($field_id);
-			$return_content = customforms::get_current_fields($form_id);
+			$return_content = customforms::get_current_fields($form_id,$this->user);
 		}
 		
 		echo json_encode(array("status"=>"success", "response"=>$return_content));
@@ -497,7 +497,7 @@ class Forms_Controller extends Admin_Controller
 			
 		}
 		
-		$return_content = customforms::get_current_fields($form_id);
+		$return_content = customforms::get_current_fields($form_id,$this->user);
 		echo json_encode(array("status"=>"success", "response"=>$return_content));
 	}
 
@@ -509,8 +509,15 @@ class Forms_Controller extends Admin_Controller
 	*/
 	private function _get_public_state($field_ispublic_submit,$field_ispublic_visible)
 	{
-		// is_public additions by george
-		$visibility_selection = array('0'=>Kohana::lang('ui_admin.visible_admin'), '1'=>Kohana::lang('ui_admin.visible_public'));
+		$visibility_selection = array('0' => Kohana::lang('ui_admin.anyone_role'));
+		
+		$roles = ORM::factory('role')->find_all();
+		foreach($roles as $role)
+		{
+			$langname = 'ui_admin.'.$role->name.'_role';
+			$visibility_selection[$role->id] = Kohana::lang($langname);
+		}
+
 		$html ="<div class=\"forms_item\">"; 
 		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_submit')."</strong><br />";
 		if ($field_ispublic_submit != 1)
@@ -861,7 +868,6 @@ class Forms_Controller extends Admin_Controller
 			$html .= 	Kohana::lang('ui_admin.no')." " . form::radio('field_required', '0', FALSE);
 		}
 		$html .="</div>";
-		// is_public additions by george
 		$html .= $this->_get_public_state($field_ispublic_submit, $field_ispublic_visible);
 		$html .="<div style=\"clear:both;\"></div>";
 		$html .="<div class=\"forms_item\">";

@@ -2,7 +2,9 @@
 	$lang = array(
 	'comments_form_error' => 'error!',
 	'custom_field' => array(
-		'values' => 'Please enter a valid value for one of your custom form items',
+		'values' => 'Please enter a valid value for the highlighted field below',
+		'numeric' => 'Please enter a valid NUMBER for the highlighted field below',
+		'default' => 'Invalid input',
 	),
 	'data_include' => array(
 		'between' => 'Please select a valid item to include in the download',
