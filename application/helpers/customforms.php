@@ -18,15 +18,15 @@ class customforms_Core {
 	 * @param bool $public_visible Whether or not this is being viewed publicly
 	 * @param bool $public_submit Whether or not this is being submitted publicly
 	 */
-	public function get_custom_form_fields($incident_id = false, $form_id = 1, $data_only = false, $public_visible = 0, $public_submit = 0)
+	public function get_custom_form_fields($incident_id = false, $form_id = 1, $data_only = false)
 	{
 		$fields_array = array();
 
 		if (!$form_id)
 			$form_id = 1;
-	
-		//added by george to only pull public forma if set in function call
-		$public_state = array('field_ispublic_visible >='=>$public_visible, 'field_ispublic_submit >='=>$public_submit);
+
+		$user_level = customforms::get_user_max_auth();
+		$public_state = array('field_ispublic_visible <='=>$user_level, 'field_ispublic_submit <='=>$user_level);
 		$custom_form = ORM::factory('form', $form_id)->where($public_state)->orderby('field_position','asc');
 		
 		foreach ($custom_form->form_field as $custom_formfield)
@@ -55,6 +55,8 @@ class customforms_Core {
 					'field_height' => $custom_formfield->field_height,
 					'field_width' => $custom_formfield->field_width,
 					'field_isdate' => $custom_formfield->field_isdate,
+					'field_ispublic_visible' => $custom_formfield->field_ispublic_visible,
+					'field_ispublic_submit' => $custom_formfield->field_ispublic_submit,
 					'field_response' => ''
 					);
 			}
@@ -62,34 +64,89 @@ class customforms_Core {
 
 		return $fields_array;
 	}
-	
+
+
+	/**
+	 * Returns the user's maximum role id number
+	 * @param array $user the current user object
+	 */
+	public function get_user_max_auth(){
+        if(! isset($_SESSION['auth_user']))
+			return 0;
+
+		$user = new User_Model($_SESSION['auth_user']->id);
+		
+		if($user->loaded == true){
+			$r = array();
+			foreach($user->roles as $role){
+				array_push($r,$role);
+			}
+			return max($r);
+		}
+		return 0;
+	}
 	
 	/**
 	 * Validate Custom Form Fields
 	 * @param array $custom_fields Array
 	 */
-	function validate_custom_form_fields($custom_fields = array())
+	public function validate_custom_form_fields(&$post, $user = FALSE)
 	{
-		$custom_fields_error = "";
 
-		foreach ($custom_fields as $field_id => $field_response)
+		foreach ($post->custom_field as $field_id => $field_response)
 		{
-			// Get the parameters for this field
-			$field_param = ORM::factory('form_field', $field_id);
+		
+			$field_param = ORM::factory('form_field',$field_id)->where('form_id','0')->orwhere('form_id',$post->form_id)->find();
 
+			// Validate that this custom field already exists
+			if ( ! $field_param->loaded)
+			{
+				$post->add_error('custom_field','default');
+				return;
+			}
+
+			if ($field_param->field_ispublic_submit < customforms::get_user_max_auth($user))
+			{
+				$post->add_error('custom_field','default');
+				return;
+			}
+
+			// Validate that the field is required
+			if ( $field_param->field_required)
+				$post->add_rules('custom_field','required');
+
+			// check if it matches a specific type 
+			
+
+			// Get the parameters for this field
+			//$field_param = ORM::factory('form_field', $field_id)->where('form_id','0')->where('form_id',$post->form_id);
+			//$field_param = ORM::factory('form_field', $field_id)->orwhere(array('form_id' => 0, 'form_id' => $post->form_id));
+/*
 			if ($field_param->loaded == true)
 			{
+				// Validate that this form field can be submitted by this person
+				//if ($field_param->field_ispublic_submit <= $public_submit)
+				//	unset($post->custom_field[$field_id]);
+
+				if ($field_param->form_id != 0 && $field_param->form_id != $post->form_id)
+					$post->add_rules('custom_field','default');
+
 				// Validate for required
 				if ($field_param->field_required == 1 AND $field_response == "")
-					return false;
+					$post->add_error('custom_field','required');
 
 				// Validate for date
-				if ($field_param->field_isdate == 1 AND $field_response != "")
+				if ($field_param->field_type == 3 AND $field_response != "")
 				{
 					$myvalid = new Valid();
+					$post->add_error('custom_field','');
 					return $myvalid->date_mmddyyyy($field_response);
 				}
+			}else{
+echo "something went terribly wrong\n";
+exit;
 			}
+			*/
 		}
 
 		return true;
@@ -99,123 +156,45 @@ class customforms_Core {
     * Generate list of currently created Form Fields
     * @param int $form_id The id no. of the form
     */
-    public function get_current_fields($form_id = 0)
+    public function get_current_fields($form_id = 0, $user = FALSE)
     {  
-		$fields = ORM::factory('form_field')
-			->where('form_id', $form_id)
-			->orderby('field_position', 'asc')
-			->orderby('id', 'asc')
-			->find_all();
-
 		$form_fields = "<form action=\"\">";
-		foreach ($fields as $field)
-		{
-			$field_id = $field->id;
-			$field_name = $field->field_name;
-			$field_default = $field->field_default;
-			$field_required = $field->field_required;
-			$field_width = $field->field_width;
-			$field_height = $field->field_height;
-			$field_maxlength = $field->field_maxlength;
-			$field_position = $field->field_position;
-			$field_type = $field->field_type;
-			$field_isdate = $field->field_isdate;
-			$field_ispublic_visible = $field->field_ispublic_visible;
-			$field_ispublic_submit = $field->field_ispublic_submit;
-
-			$form_fields .= "<div class=\"forms_fields_item\">";
-			$form_fields .= "	<strong>".$field_name.":</strong><br />";
-			if ($field_type == 1)
-			{
-				$form_fields .= form::input("custom_".$field_id, '', '');
-			}
-			elseif ($field_type == 2)
-			{
-				$form_fields .= form::textarea("custom_".$field_id, '');
-			}
-			elseif ($field_type == 3)
-			{
-            	$form_fields .= "<script type=\"text/javascript\">
-                	$(document).ready(function() {
-                	$(\"#custom_".$field_id."\").datepicker({ 
-                	showOn: \"both\", 
-       	        	 buttonImage: \"" . url::base() . "media/img/icon-calendar.gif\", 
-       	         	buttonImageOnly: true 
-        	        });
-    	            });
-		            </script>";
-				$form_fields .= form::input("custom_".$field_id, '', '');
-			}
-			elseif ($field_type >= 5 && $field_type <= 7)
-			{
-				$defaults = explode('::',$field_default);
-				$default = 0;
-				if(isset($defaults[1])){
-					$default = $defaults[1];
-			}
-				$options = explode(',',$defaults[0]);
-				
-				switch ($field_type){
-					case 5:
-						foreach($options as $option){
-							if($option == $default){
-								$set_default = TRUE;	
-							}else{
-								$set_default = FALSE;	
-							}
-							$form_fields .= form::label("custom_".$field_id," ".$option." ");
-							$form_fields .= form::radio("custom_".$field_id,$option,$set_default);
-						}
-						break;
-					case 6:
-							$multi_defaults = explode(',',$default);
-								foreach($options as $option){
-							$set_default = FALSE;	
-							foreach($multi_defaults as $def){
-								if($option == $def)
-									$set_default = TRUE;	
-							}
-							$form_fields .= form::label("custom_".$field_id," ".$option." ");
-							$form_fields .= form::checkbox("custom_".$field_id,$option,$set_default);
-						}
-						break;
-					case 7:
-						$form_fields .= form::dropdown("custom_".$field_id,$options,$default);
-						break;
-
-				}
-			}
-			/*if ($field_isdate == 1) 
-			{
-				$form_fields .= "&nbsp;<a href=\"#\"><img src = \"".url::base()."media/img/icon-calendar.gif\"  align=\"middle\" border=\"0\"></a>";
-			}*/
-				
-			$visibility = Kohana::lang('ui_admin.visible_admin');
-			if($field_ispublic_visible)
-				$visibility = Kohana::lang('ui_admin.visible_public');
-
-			$submitability = Kohana::lang('ui_admin.visible_admin');
-			if($field_ispublic_submit)
-				$submitability = Kohana::lang('ui_admin.visible_public');
-
-			$isrequired = Kohana::lang('ui_admin.no');
-			if($field_required)
-				$isrequired = Kohana::lang('ui_admin.yes');
-
-			$form_fields .= "	<div class=\"forms_fields_edit\">
-			<a href=\"javascript:fieldAction('e','EDIT',".$field_id.",".$form_id.",".$field_type.");\">EDIT</a>&nbsp;|&nbsp;
-			<a href=\"javascript:fieldAction('d','DELETE',".$field_id.",".$form_id.",".$field_type.");\">DELETE</a>&nbsp;|&nbsp;
-			<a href=\"javascript:fieldAction('mu','MOVE',".$field_id.",".$form_id.",".$field_type.");\">MOVE UP</a>&nbsp;|&nbsp;
-			<a href=\"javascript:fieldAction('md','MOVE',".$field_id.",".$form_id.",".$field_type.");\">MOVE DOWN</a>&nbsp;|&nbsp;
-			". Kohana::lang('ui_admin.required').": ".$isrequired."&nbsp;|&nbsp;
-			". Kohana::lang('ui_main.reports_btn_submit').": ".$submitability."&nbsp;|&nbsp;
-			". Kohana::lang('ui_main.view').": ".$visibility."
-			</div>";
-			$form_fields .= "</div>";
-		}
+		$form = array();
+        $form['custom_field'] = customforms::get_custom_form_fields('',$form_id,true);
+        $form['id'] = $form_id;
+        $custom_forms = new View('reports_submit_custom_forms');
+        $disp_custom_fields = customforms::get_custom_form_fields('',$form_id,false);
+        $custom_forms->disp_custom_fields = $disp_custom_fields;
+        $custom_forms->form = $form;
+		$custom_forms->editor = true;
+		$form_fields.= $custom_forms->render();
 		$form_fields .= "</form>";
 	
 		return $form_fields;
+	}
+
+	/** 
+	* Generates the html that's passed back in the json switch_Action form switcher
+	* @param int $incident_id The Incident Id
+	* @param int $form_id Form Id
+	* @param int $public_visible If this form should be publicly visible
+	* @param int $pubilc_submit If this form is allowed to be submitted by anyone on the internets.
+	*/
+	public function switcheroo($incident_id = '', $form_id = ''){
+        $form_fields = '';
+
+        $fields_array = customforms::get_custom_form_fields($incident_id, $form_id, true);
+
+        $form = array();
+        $form['custom_field'] = customforms::get_custom_form_fields($incident_id,$form_id,true);
+        $form['id'] = $form_id;
+        $custom_forms = new View('reports_submit_custom_forms');
+        $disp_custom_fields = customforms::get_custom_form_fields($incident_id,$form_id,false);
+        $custom_forms->disp_custom_fields = $disp_custom_fields;
+        $custom_forms->form = $form;
+        $form_fields.= $custom_forms->render();
+		
+		return $form_fields;	
 	}
 }
 

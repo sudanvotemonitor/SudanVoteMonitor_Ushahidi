@@ -28,8 +28,21 @@
 			<div class="row">
 				<input type="hidden" name="form_id" id="form_id" value="<?php echo $id?>">
 			</div>
+			
 			<div class="report_left">
+
 				<div class="report_row">
+					<?php if(count($forms) > 1){ ?>
+					<div class="row">
+						<h4><span><?php echo Kohana::lang('ui_main.select_form_type');?></span>
+						<span class="sel-holder">
+							<?php print form::dropdown('form_id', $forms, $form['form_id'],
+						' onchange="formSwitch(this.options[this.selectedIndex].value, \''.$id.'\')"') ?>
+						</span>
+						<div id="form_loader" style="float:left;"></div>
+						</h4>
+					</div>
+					<?php } ?>
 					<h4><?php echo Kohana::lang('ui_main.reports_title'); ?></h4>
 					<?php print form::input('incident_title', $form['incident_title'], ' class="text long"'); ?>
 				</div>
