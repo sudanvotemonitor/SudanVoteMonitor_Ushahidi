@@ -91,6 +91,8 @@
 						$html .= "</span>";
 						$cnt++;
 					}
+					// XXX Hack to deal with required checkboxes that are submitted with nothing checked
+					$html .= form::hidden("custom_field[".$field_id."-BLANKHACK]",'');
 					break;
 				case 7:
 					// fix this here place now yessir
