@@ -1,14 +1,33 @@
 <div id="custom_forms">
 					
      <?php
-                                
 	foreach ($disp_custom_fields as $field_id => $field_property)
 	{
+		$isrequired = "";
+
+		if($field_property['field_required'])
+			$isrequired = "<font color=red>*</font>";
+
 		echo "<div class=\"report_row\">";
-		echo "<h4>" . $field_property['field_name'] . "</h4>";
+		echo "<h4>" . $field_property['field_name'] . $isrequired . "</h4>";
+
+		// Workaround for situtaions where admin can view, but doesn't have suff. perms to edit.
+		if (isset($custom_field_mismatch))
+		{
+			if(isset($custom_field_mismatch[$field_id]))
+			{
+				if(isset($form['custom_field'][$field_id]))
+					echo $form['custom_field'][$field_id];
+				else
+					echo "no data";
+				echo "</div>";
+				continue;
+			}
+		}
+
 		if ($field_property['field_type'] == 1)
 		{ // Text Field
-			echo form::input('custom_field['.$field_id.']', $form['custom_field'][$field_id], ' id="custom_field_'.$field_id.'" class="text custom_text"');
+			echo form::input('custom_field['.$field_id.']', $form['custom_field'][$field_id], ' class="text custom_text"');
 		}
 		elseif ($field_property['field_type'] == 2)
 		{ // TextArea Field
@@ -32,9 +51,14 @@
 		{
 			$defaults = explode('::',$field_property['field_default']); 
 			$default = 0;
-			if(isset($defaults[1])){
-					$default = $defaults[1];
-				}
+
+			if(isset($defaults[1]))
+				$default = $defaults[1];
+
+			if (isset($form['custom_field'][$field_id]))
+				if($form['custom_field'][$field_id] != '')
+					$default = $form['custom_field'][$field_id];
+
 			$options = explode(',',$defaults[0]);
 			$html ='';	
 			switch ($field_property['field_type']){
@@ -45,24 +69,36 @@
 						}else{
 							$set_default = FALSE;	
 						}
+
+						$html .= "<span style=\"margin-right: 15px\">";
 						$html .= form::label('custom_field['.$field_id.']'," ".$option." ");
 						$html .= form::radio('custom_field['.$field_id.']',$option,$set_default);
+						$html .= "</span>";
 					}
 					break;
 				case 6:
 					$multi_defaults = explode(',',$default);
+					$cnt = 0;
 					foreach($options as $option){
 						$set_default = FALSE;	
 						foreach($multi_defaults as $def){
 							if($option == $def)
 								$set_default = TRUE;	
 						}
+						$html .= "<span style=\"margin-right: 15px\">";
 						$html .= form::label("custom_field[".$field_id.']'," ".$option." ");
-						$html .= form::checkbox("custom_field[".$field_id.']',$option,$set_default);
+						$html .= form::checkbox("custom_field[".$field_id.'-'.$cnt.']',$option,$set_default);
+						$html .= "</span>";
+						$cnt++;
 					}
 					break;
 				case 7:
-					$html .= form::dropdown("custom_field[".$field_id.']',$options,$default);
+					// fix this here place now yessir
+					$ddoptions = array();
+					foreach($options as $op)
+						$ddoptions[$op] = $op;
+
+					$html .= form::dropdown("custom_field[".$field_id.']',$ddoptions,$default);
 					break;
 
 			}
@@ -80,24 +116,15 @@
 			$isrequired = Kohana::lang('ui_admin.no');
 			if($field_property['field_required'])
 				$isrequired = Kohana::lang('ui_admin.yes');
-		/*	
-			$visibility = Kohana::lang('ui_admin.visible_admin');
-			if($field_property['field_ispublic_visible'])
-				$visibility = Kohana::lang('ui_admin.visible_public');
-
-			$submitability = Kohana::lang('ui_admin.visible_admin');
-			if($field_property['field_ispublic_submit'])
-				$submitability = Kohana::lang('ui_admin.visible_public');
-
-		*/
+	
 			$form_fields .= "	<div class=\"forms_fields_edit\">
 			<a href=\"javascript:fieldAction('e','EDIT',".$field_id.",".$form['id'].",".$field_property['field_type'].");\">EDIT</a>&nbsp;|&nbsp;
 			<a href=\"javascript:fieldAction('d','DELETE',".$field_id.",".$form['id'].",".$field_property['field_type'].");\">DELETE</a>&nbsp;|&nbsp;
 			<a href=\"javascript:fieldAction('mu','MOVE',".$field_id.",".$form['id'].",".$field_property['field_type'].");\">MOVE UP</a>&nbsp;|&nbsp;
 			<a href=\"javascript:fieldAction('md','MOVE',".$field_id.",".$form['id'].",".$field_property['field_type'].");\">MOVE DOWN</a>&nbsp;|&nbsp;
 			". Kohana::lang('ui_admin.required').": ".$isrequired."&nbsp;|&nbsp;
-			". Kohana::lang('ui_main.reports_btn_submit').": ".$visibility_selection[$field_property['field_ispublic_visible']]."&nbsp;|&nbsp;
-			". Kohana::lang('ui_main.view').": ".$visibility_selection[$field_property['field_ispublic_submit']]."
+			". Kohana::lang('ui_main.reports_btn_submit').": ".$visibility_selection[$field_property['field_ispublic_submit']]."&nbsp;|&nbsp;
+			". Kohana::lang('ui_main.view').": ".$visibility_selection[$field_property['field_ispublic_visible']]."
 			</div>";
 			echo $form_fields;
 		}

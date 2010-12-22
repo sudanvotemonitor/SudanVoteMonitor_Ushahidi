@@ -15,10 +15,9 @@ class customforms_Core {
 	 * @param int $form_id The unique form_id. Uses default form (1), if none selected
 	 * @param bool $field_names_only Whether or not to include just fields names, or field names + data
 	 * @param bool $data_only Whether or not to include just data
-	 * @param bool $public_visible Whether or not this is being viewed publicly
-	 * @param bool $public_submit Whether or not this is being submitted publicly
+	 * @param string $action If this is being used to grab fields for submit or view of data
 	 */
-	public function get_custom_form_fields($incident_id = false, $form_id = 1, $data_only = false)
+	public function get_custom_form_fields($incident_id = false, $form_id = 1, $data_only = false, $action = "submit")
 	{
 		$fields_array = array();
 
@@ -26,7 +25,12 @@ class customforms_Core {
 			$form_id = 1;
 
 		$user_level = customforms::get_user_max_auth();
-		$public_state = array('field_ispublic_visible <='=>$user_level, 'field_ispublic_submit <='=>$user_level);
+
+		if ($action == "view")
+			$public_state = array('field_ispublic_visible <='=>$user_level);
+		else
+			$public_state = array('field_ispublic_submit <='=>$user_level);
+
 		$custom_form = ORM::factory('form', $form_id)->where($public_state)->orderby('field_position','asc');
 		
 		foreach ($custom_form->form_field as $custom_formfield)
@@ -79,7 +83,7 @@ class customforms_Core {
 		if($user->loaded == true){
 			$r = array();
 			foreach($user->roles as $role){
-				array_push($r,$role);
+				array_push($r,$role->id);
 			}
 			return max($r);
 		}
@@ -90,73 +94,94 @@ class customforms_Core {
 	 * Validate Custom Form Fields
 	 * @param array $custom_fields Array
 	 */
-	public function validate_custom_form_fields(&$post, $user = FALSE)
+	public function validate_custom_form_fields(&$post)
 	{
+		$errors = array();
+		$custom_fields = array();
 
+		// Checkboxes are submitted as custom_field[fieldid-boxnum]
+		// Pre-process to consolidate checkboxes
 		foreach ($post->custom_field as $field_id => $field_response)
 		{
+			$split = explode("-", $field_id);
+			if (isset($split[1]))
+			{
+				if (isset($custom_fields[$split[0]]))
+				{
+					$custom_fields[$split[0]] .= ",$field_response";
+				}
+				else
+				{
+					$custom_fields[$split[0]] = $field_response;
+				}
+			}
+			else
+			{
+				$custom_fields[$split[0]] = $field_response;
+			}
+		}
+	
+		$post->custom_field = $custom_fields;
+
+		foreach ($post->custom_field  as $field_id => $field_response)
+		{
 		
-			$field_param = ORM::factory('form_field',$field_id)->where('form_id','0')->orwhere('form_id',$post->form_id)->find();
+			$field_param = ORM::factory('form_field',$field_id);
+			$custom_name = $field_param->field_name;
 
 			// Validate that this custom field already exists
 			if ( ! $field_param->loaded)
 			{
-				$post->add_error('custom_field','default');
-				return;
+				array_push($errors,"The $custom_name field does not exist");
+				return $errors;
 			}
-
-			if ($field_param->field_ispublic_submit < customforms::get_user_max_auth($user))
+			
+			$max_auth = customforms::get_user_max_auth();
+			if ($field_param->field_ispublic_submit > $max_auth)
 			{
-				$post->add_error('custom_field','default');
-				return;
+				array_push($errors, "The $custom_name field cannot be edited by your account");
+				return $errors;
 			}
 
 			// Validate that the field is required
-			if ( $field_param->field_required)
-				$post->add_rules('custom_field','required');
+			if ( $field_param->field_required == 1 AND $field_response == "")
+				array_push($errors,"The $custom_name field is required");
 
-			// check if it matches a specific type 
-			
-
-			// Get the parameters for this field
-			//$field_param = ORM::factory('form_field', $field_id)->where('form_id','0')->where('form_id',$post->form_id);
-			//$field_param = ORM::factory('form_field', $field_id)->orwhere(array('form_id' => 0, 'form_id' => $post->form_id));
-/*
-			if ($field_param->loaded == true)
+			// Validate for date
+			if ($field_param->field_type == 3 AND $field_response != "")
 			{
-				// Validate that this form field can be submitted by this person
-				//if ($field_param->field_ispublic_submit <= $public_submit)
-				//	unset($post->custom_field[$field_id]);
-
-				if ($field_param->form_id != 0 && $field_param->form_id != $post->form_id)
-					$post->add_rules('custom_field','default');
-
-				// Validate for required
-				if ($field_param->field_required == 1 AND $field_response == "")
-					$post->add_error('custom_field','required');
-
-				// Validate for date
-				if ($field_param->field_type == 3 AND $field_response != "")
-				{
-					$myvalid = new Valid();
-					$post->add_error('custom_field','');
-					return $myvalid->date_mmddyyyy($field_response);
-				}
-			}else{
-echo "something went terribly wrong\n";
-exit;
+				$myvalid = new Valid();
+				$myvalid->date_mmddyyyy($field_response);
+				if (!$myvalid->date_mmddyyyy($field_response))
+					array_push($errors,"The $custom_name field is not a valid date (MM/DD/YYYY)");
 			}
-			*/
+
+			// Hack up Checkboxes
+			if ($field_param->field_type >= 5 && $field_param->field_type <=7)
+			{
+				$defaults = explode('::',$field_param->field_default);
+				$options = explode(',',$defaults[0]);
+				$responses = explode(',',$field_response);
+				foreach($responses as $response)
+					if( ! in_array($response, $options))
+						array_push($errors,"The $custom_name field does not include $response as an option");
+			}
+
+			if ($field_param->field_type == 6)
+			{
+				array_push($errors,"This is what customform is after consolidation: $field_response");
+			}
+
 		}
 
-		return true;
+		return $errors;
 	}
 
     /**
-    * Generate list of currently created Form Fields
+    * Generate list of currently created Form Fields for the admin interface
     * @param int $form_id The id no. of the form
     */
-    public function get_current_fields($form_id = 0, $user = FALSE)
+    public function get_current_fields($form_id = 0)
     {  
 		$form_fields = "<form action=\"\">";
 		$form = array();
@@ -195,6 +220,23 @@ exit;
         $form_fields.= $custom_forms->render();
 		
 		return $form_fields;	
+	}
+	
+	/** 
+	* Generates an array of fields that an admin can see but can't edit
+	* @param int $form_id The form id
+	**/
+	public function get_edit_mismatch($form_id = 0)
+	{
+		$user_level = customforms::get_user_max_auth();
+		$public_state = array('field_ispublic_submit >'=>$user_level, 'field_ispublic_visible <='=>$user_level);
+		$custom_form = ORM::factory('form', $form_id)->where($public_state)->orderby('field_position','asc');
+		$mismatches = array();	
+		foreach ($custom_form->form_field as $custom_formfield)
+		{
+			$mismatches[$custom_formfield->id] = 1;
+		}
+		return $mismatches;
 	}
 }
 

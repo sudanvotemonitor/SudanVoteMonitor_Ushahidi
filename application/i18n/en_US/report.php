@@ -4,7 +4,7 @@
 	'custom_field' => array(
 		'values' => 'Please enter a valid value for the highlighted field below',
 		'numeric' => 'Please enter a valid NUMBER for the highlighted field below',
-		'default' => 'Invalid input',
+		'default' => 'Invalid input on form field',
 	),
 	'data_include' => array(
 		'between' => 'Please select a valid item to include in the download',

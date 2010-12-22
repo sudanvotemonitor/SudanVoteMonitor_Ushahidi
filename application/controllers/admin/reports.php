@@ -391,7 +391,6 @@ class Reports_Controller extends Admin_Controller
         // initialize custom field array
         $form['custom_field'] = customforms::get_custom_form_fields($id,'',true);
 
-
         // Locale (Language) Array
         $this->template->content->locale_array = Kohana::config('locale.all_languages');
 
@@ -611,10 +610,8 @@ class Reports_Controller extends Admin_Controller
             }
 
             // Validate Custom Fields
-            if (isset($post->custom_field) && !customforms::validate_custom_form_fields($post->custom_field))
-            {
-                $post->add_error('custom_field', 'values');
-            }
+			$custom_errors = array();
+			$custom_errors = customforms::validate_custom_form_fields($post);
 
             $post->add_rules('incident_active','required', 'between[0,1]');
             $post->add_rules('incident_verified','required', 'length[0,1]');
@@ -627,7 +624,7 @@ class Reports_Controller extends Admin_Controller
 
 
             // Test to see if things passed the rule checks
-            if ($post->validate())
+            if ($post->validate() && count($custom_errors) == 0)
             {
                 // Yes! everything is valid
                 $location_id = $post->location_id;
@@ -912,6 +909,7 @@ class Reports_Controller extends Admin_Controller
 
                 // populate the error fields, if any
                 $errors = arr::overwrite($errors, $post->errors('report'));
+				$errors = array_merge($errors, $custom_errors);
                 $form_error = TRUE;
             }
         }
@@ -1000,8 +998,10 @@ class Reports_Controller extends Admin_Controller
 
         // Retrieve Custom Form Fields Structure
 		$this->template->content->custom_forms = new View('reports_submit_custom_forms');
-        $disp_custom_fields = customforms::get_custom_form_fields($id,$form['form_id'],false);
+        $disp_custom_fields = customforms::get_custom_form_fields($id,$form['form_id'],false,"view");
+		$custom_field_mismatch = customforms::get_edit_mismatch($form['form_id']);
         $this->template->content->custom_forms->disp_custom_fields = $disp_custom_fields;
+		$this->template->content->custom_forms->custom_field_mismatch = $custom_field_mismatch;
 		$this->template->content->custom_forms->form = $form;
 
 

@@ -390,10 +390,11 @@ class Reports_Controller extends Main_Controller {
 			}
 			
 			// Validate Custom Fields
-			customforms::validate_custom_form_fields($post);
+			$custom_errors = array();
+			$custom_errors = customforms::validate_custom_form_fields($post);
 
 			// Test to see if things passed the rule checks
-			if ($post->validate())
+			if ($post->validate() && count($custom_errors) == 0)
 			{
 				// STEP 1: SAVE LOCATION
 				$location = new Location_Model();
@@ -552,6 +553,7 @@ class Reports_Controller extends Main_Controller {
 
 				// populate the error fields, if any
 				$errors = arr::overwrite($errors, $post->errors('report'));
+				$errors = array_merge($errors,$custom_errors);
 				$form_error = TRUE;
 			}
 		}
@@ -785,6 +787,7 @@ class Reports_Controller extends Main_Controller {
 					// Populate the error fields, if any
 
 					$errors = arr::overwrite($errors, $post->errors('comments'));
+					$errors = array_merge($errors, $custom_errors);
 					$form_error = TRUE;
 				}
 			}
@@ -888,11 +891,11 @@ class Reports_Controller extends Main_Controller {
 
 		// Initialize custom field array
 		$this->template->content->custom_forms = new View('reports_view_custom_forms');
-		$form_field_names = customforms::get_custom_form_fields($id,$incident->form_id,false);
+		$form_field_names = customforms::get_custom_form_fields($id,$incident->form_id,false, "view");
 		$this->template->content->custom_forms->form_field_names = $form_field_names;
 
 		// Retrieve Custom Form Fields Structure
-		$disp_custom_fields =customforms::get_custom_form_fields($id,$incident->form_id,true);
+		$disp_custom_fields =customforms::get_custom_form_fields($id,$incident->form_id,true, "view");
 		$this->template->content->custom_forms->disp_custom_fields = $disp_custom_fields;
 
 		// Are we allowed to submit comments?
