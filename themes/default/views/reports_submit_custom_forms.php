@@ -48,7 +48,7 @@
 			</script>";
 		}
 		elseif ($field_property['field_type'] >=5 && $field_property['field_type'] <=7)
-		{
+		{// Multiple-selector Fields
 			$defaults = explode('::',$field_property['field_default']); 
 			$default = 0;
 
@@ -95,7 +95,6 @@
 					$html .= form::hidden("custom_field[".$field_id."-BLANKHACK]",'');
 					break;
 				case 7:
-					// fix this here place now yessir
 					$ddoptions = array();
 					foreach($options as $op)
 						$ddoptions[$op] = $op;
