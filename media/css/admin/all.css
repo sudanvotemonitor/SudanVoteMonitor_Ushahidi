@@ -856,6 +856,7 @@ ul.pager li a.active {background:#f2f7fa;}
 }
 .report-form input.custom_text {
 	width:363px;
+	margin-bottom: 10px;
 }
 .report-form textarea{
 	width:368px;

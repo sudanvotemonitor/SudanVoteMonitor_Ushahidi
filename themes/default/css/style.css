@@ -661,9 +661,9 @@ div.report-description-text h5 {
 }
 
 div.report-custom-forms-text {
-    border-top:1px dotted #C0C2B8;
+    /*border-top:1px dotted #C0C2B8;*/
     padding:10px 0;
-    margin-top:10px;
+    /*margin-top:10px;*/
 }
 
 div.report-custom-forms-row {
