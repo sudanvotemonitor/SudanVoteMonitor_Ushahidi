@@ -99,26 +99,38 @@ class customforms_Core {
 		$errors = array();
 		$custom_fields = array();
 
-		// Checkboxes are submitted as custom_field[fieldid-boxnum]
-		// Pre-process to consolidate checkboxes
+		/* XXX Checkboxes hackery 
+			 Checkboxes are submitted in the post as custom_field[field_id-boxnum]
+			 This foreach loop consolidates them into one variable separated by commas.
+			 If no checkboxes are selected then the custom_field[] for that variable is not sent
+			 To get around that the view sets a hidden custom_field[field_id-BLANKHACK] field that 
+			 ensures the checkbox custom_field is there to be tested.
+		*/
 		foreach ($post->custom_field as $field_id => $field_response)
 		{
 			$split = explode("-", $field_id);
 			if (isset($split[1]))
 			{
+				// The view sets a hidden field for blankhack
+				if ($split[1] == 'BLANKHACK')
+				{
+					if(!isset($custom_fields[$split[0]]))
+					{
+						$custom_fields[$split[0]] = 'BLANKHACK';	
+						continue;
+					}
+					else
+						continue;
+				}
+				
 				if (isset($custom_fields[$split[0]]))
-				{
 					$custom_fields[$split[0]] .= ",$field_response";
-				}
 				else
-				{
 					$custom_fields[$split[0]] = $field_response;
-				}
+
 			}
 			else
-			{
 				$custom_fields[$split[0]] = $field_response;
-			}
 		}
 	
 		$post->custom_field = $custom_fields;
@@ -156,21 +168,23 @@ class customforms_Core {
 					array_push($errors,"The $custom_name field is not a valid date (MM/DD/YYYY)");
 			}
 
-			// Hack up Checkboxes
+			// Validate multi-value boxes only have acceptable values
 			if ($field_param->field_type >= 5 && $field_param->field_type <=7)
 			{
 				$defaults = explode('::',$field_param->field_default);
 				$options = explode(',',$defaults[0]);
 				$responses = explode(',',$field_response);
 				foreach($responses as $response)
-					if( ! in_array($response, $options))
+					if( ! in_array($response, $options) && $response != 'BLANKHACK')
 						array_push($errors,"The $custom_name field does not include $response as an option");
 			}
 
-			if ($field_param->field_type == 6)
+			// Validate that a required checkbox is checked
+			if ($field_param->field_type == 6 && $field_response == 'BLANKHACK' && $field_param->field_required == 1)
 			{
-				array_push($errors,"This is what customform is after consolidation: $field_response");
+				array_push($errors,"The $custom_name field is required");
 			}
+
 
 		}
 
