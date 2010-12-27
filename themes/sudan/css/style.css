@@ -1,0 +1,192 @@
+/*
+Theme Name: Sudan
+Description: Sudan Colors
+Demo: http://www.sudanvotemonitor.com
+Version: 1.0
+Author: Selvam Velmurugan
+Author Email: selvam@emoksha
+*/
+
+/* header background */
+body#page{
+    background: #D6E5BC url(../images/bar1.gif) 50% 0 repeat-x;
+}
+
+/* footer */
+div#footer
+{
+    background: #D6E5BC url(../images/bar2.gif) 50% 0 repeat-x;
+    margin: 35px 0 0 0;
+}
+div#underfooter{
+    background-color:#D6E5BC;
+}
+
+/* links */
+a{
+    color: #007229;
+}
+
+a:hover{
+    color: #007229;
+}
+
+table.table-list tbody tr td a{
+    color: #335509;
+}
+
+/* logo setup */
+div#logo{
+    border: 0;
+    background: #D6E5BC url(../images/SudanVoteReport2010_DEV.png) 100% 0 repeat-x;
+    padding: 32px 375px 110px;
+    float: left;
+    margin: 40px 20px 0 0;
+}
+div#logo h1{
+    margin:0;
+    padding:0;
+    font-size: 20px;
+}
+div#logo span{
+    font-size:30px;
+}
+
+/* Image Changer */
+
+div#MagicImage{
+	float: left;
+	margin: -141px 20px 0 758px;
+}
+
+/* Follow Us on Twitter */
+div#FollowUSonTwitter{
+	float: left;
+	margin: 33px 0 0 185px;
+}
+
+/* main menu setup */
+div#mainmenu{
+    background: #D6E5BC url(../images/bar-footer.jpg) 50% 0 repeat-x;
+}
+
+div#mainmenu a{
+    color: #335509;
+}
+
+div#mainmenu a:hover{
+	color: #335509;
+    background-color: #D6E5BC;
+}
+
+div#mainmenu a.active{
+    color: #335509;
+    background-color: #D6E5BC;
+}
+
+/* main body setup */
+div#middle{
+    width: auto;
+    margin: 0px 0px 0px 0px;
+    clear: both;
+    background: #8FC25A;
+}
+div#middle .background{
+    min-height: 140px;
+}
+div#middle .layoutleft{
+    background: #8FC25A;
+}
+div#middle .layoutright{
+    background: #8FC25A;
+}
+
+/* Category Filter Side Bar */
+.category {
+    float:right;
+    width:200px;
+}
+.category .grey-box {
+    overflow:hidden;
+    width:80%;
+    background:#D6E5BC url(../images/grey-box-top.gif) no-repeat;
+}
+ul.category-filters{
+    background: #548335;
+    border-top-color: #548335;
+    border-bottom-color: #548335;
+}
+ul.category-filters li a{
+    color: #335509;
+    border-color: #E7E3DA;
+}
+ul.category-filters li a:hover, ul.category-filters li a.active {
+    color: #335509;
+    background-color: #D6E5BC;
+    border-color: #036564;
+}
+.category .swatch{
+    float:left;
+    margin:6px 8px 0 0;
+    width:10px;
+    height:10px;
+}
+div.category-title{ 
+    font-size:10px;
+}
+
+/*-search-*/
+.search_block{
+    padding:30px;
+}
+.search_info{
+    margin:0 0 15px 0;
+    border:1px solid #999;
+    padding:5px;
+    background-color:#eee;
+}
+.search_result{
+    margin:0 0 15px 0;
+}
+.search_highlight{
+    font-weight:bold;
+}
+.search_result{
+    font-size:13px;
+}
+.search_result h3{
+    margin:0;
+    padding:0;
+    font-weight:normal;
+    font-size:16px;
+}
+.search_date{
+    font-size:12px;
+    color:#006600;
+    font-style: italic;
+    margin-top:3px;
+}
+div#searchbox{
+    background: #D6E5BC url(../images/bar-footer.jpg) 50% 0 repeat-x;
+    margin: 15px 0 0 0;
+    border-color: #ffffff;
+}
+
+/* YouTube Video Player */
+div#youtube_video{
+    margin: 14px 0 0 0;
+    float: right;
+}
+div#youtube_URL{
+    width:224px;
+    height:96px;
+    font-size:10px;
+    border-color: #000000;
+    text-align: left;
+    border: solid;
+}
+
+
+
+
+
