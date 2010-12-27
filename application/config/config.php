@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- *  Base path of the web site. If this includes a domain, eg: localhost/ushahidi/
+ * Base path of the web site. If this includes a domain, eg: localhost/ushahidi/
  * then a full URL will be used, eg: http://localhost/ushahidi/. If it only includes
  * the path, and a site_protocol is specified, the domain will be auto-detected.
  */
