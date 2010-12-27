@@ -23,7 +23,8 @@ class customforms_Core {
 
 		if (!$form_id)
 			$form_id = 1;
-
+		
+		//NOTE will probably need to add a user_level variable for non-web based requests
 		$user_level = customforms::get_user_max_auth();
 
 		if ($action == "view")
