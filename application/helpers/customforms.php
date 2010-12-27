@@ -1,7 +1,7 @@
 <?php
 /**
  * Custom Forms Helper
- * Functions to pull in the custom form fields
+ * Functions to pull in the custom form fields and display them
  * 
  * @package    Custom Forms
  * @author     The Konpa Group - http://konpagroup.com
