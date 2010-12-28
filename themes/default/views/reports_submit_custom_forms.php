@@ -79,25 +79,45 @@
 				case 6:
 					$multi_defaults = explode(',',$default);
 					$cnt = 0;
+					$html .= "<table border=\"0\">";
 					foreach($options as $option){
+						if($cnt % 2 == 0)
+							$html .= "<tr>";
+						$html .= "<td>";
 						$set_default = FALSE;	
 						foreach($multi_defaults as $def){
 							if($option == $def)
 								$set_default = TRUE;	
 						}
 						$html .= "<span style=\"margin-right: 15px\">";
-						$html .= form::label("custom_field[".$field_id.']'," ".$option." ");
 						$html .= form::checkbox("custom_field[".$field_id.'-'.$cnt.']',$option,$set_default);
+						$html .= form::label("custom_field[".$field_id.']'," ".$option);
 						$html .= "</span>";
+
+						$html .= "</td>";
+						if ($cnt % 2 == 1 || $cnt == count($options)-1)
+							$html .= "</tr>";
+
 						$cnt++;
 					}
 					// XXX Hack to deal with required checkboxes that are submitted with nothing checked
+					$html .= "</table>";
 					$html .= form::hidden("custom_field[".$field_id."-BLANKHACK]",'');
 					break;
 				case 7:
 					$ddoptions = array();
-					foreach($options as $op)
-						$ddoptions[$op] = $op;
+					// Semi-hack to deal with dropdown boxes receiving a range like 0-100
+					if(preg_match("/[0-9]+-[0-9]+/",$defaults[0]) && count($options == 1)){
+						$dashsplit = explode('-',$defaults[0]);
+						$start = $dashsplit[0];
+						$end = $dashsplit[1];
+						for($i = $start; $i <= $end; $i++)
+							$ddoptions[$i] = $i;
+					}
+					else{
+						foreach($options as $op)
+							$ddoptions[$op] = $op;
+					}
 
 					$html .= form::dropdown("custom_field[".$field_id.']',$ddoptions,$default);
 					break;

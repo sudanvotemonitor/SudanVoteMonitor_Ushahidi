@@ -107,6 +107,9 @@ class customforms_Core {
 			 To get around that the view sets a hidden custom_field[field_id-BLANKHACK] field that 
 			 ensures the checkbox custom_field is there to be tested.
 		*/
+		if (!isset($post->custom_field))
+			return;
+
 		foreach ($post->custom_field as $field_id => $field_response)
 		{
 			$split = explode("-", $field_id);
@@ -173,7 +176,16 @@ class customforms_Core {
 			if ($field_param->field_type >= 5 && $field_param->field_type <=7)
 			{
 				$defaults = explode('::',$field_param->field_default);
-				$options = explode(',',$defaults[0]);
+				$options = array();
+                if(preg_match("/[0-9]+-[0-9]+/",$defaults[0]) && count($defaults) == 1){
+                    $dashsplit = explode('-',$defaults[0]);
+                    $start = $dashsplit[0];
+                    $end = $dashsplit[1];
+                    for($i = $start; $i <= $end; $i++)
+                        array_push($options,$i);
+                }else{
+					$options = explode(',',$defaults[0]);
+				}
 				$responses = explode(',',$field_response);
 				foreach($responses as $response)
 					if( ! in_array($response, $options) && $response != 'BLANKHACK')
