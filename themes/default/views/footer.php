@@ -27,6 +27,8 @@
 					<li><a href="<?php echo url::site()."alerts"; ?>"><?php echo Kohana::lang('ui_main.alerts'); ?></a></li>
 					<li><a href="<?php echo url::site()."help"; ?>"><?php echo Kohana::lang('ui_main.help'); ?></a></li>
 					<li><a href="<?php echo url::site()."contact"; ?>"><?php echo Kohana::lang('ui_main.contact'); ?></a></li>
+					<li><a href="http://www.sudanvotemonitor.com/blog"><?php echo Kohana::lang('ui_main.blog'); ?></a></li>
+					<li><a href="http://www.youtube.com/sudanvotemonitor"><?php echo Kohana::lang('ui_main.youtube_channel'); ?></a></li>
 					<?php
 					// Action::nav_main_bottom - Add items to the bottom links
 					Event::run('ushahidi_action.nav_main_bottom');

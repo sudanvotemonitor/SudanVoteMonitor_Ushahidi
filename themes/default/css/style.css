@@ -545,7 +545,8 @@ div.additional-content ol {
 /* content blocks */
 div.content-container{
     padding: 15px;
-    background: #E2E2E2;
+    /* background: #E2E2E2; */
+	background: #8FC25A;
 }
 
 div.content-block-left{

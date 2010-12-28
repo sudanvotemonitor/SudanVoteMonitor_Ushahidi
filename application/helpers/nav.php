@@ -58,6 +58,10 @@ class nav_Core {
 		 	$menu .= ">".$page->page_tab."</a></li>";
 		}
 
+		// Blog
+		$menu .= "<li><a href=\"http://www.sudanvotemonitor.com/blog\" ";
+		$menu .= ">".Kohana::lang('ui_main.blog')."</a></li>";
+
 		echo $menu;
 		
 		// Action::nav_admin_reports - Add items to the admin reports navigation tabs

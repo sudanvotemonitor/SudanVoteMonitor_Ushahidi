@@ -6,18 +6,19 @@
 ///////////////////////////////////////////////////////////
 
 var ImageLoad = 
-[																				
-['header.php', 	'themes/sudan/ImageChanger/flash/Referendum2.jpg', 	''	],		//  ['URL to linked page', 'URL to image', 'Caption under picture']	//
-['header.php', 	'themes/sudan/ImageChanger/flash/Referendum3.jpg', 	''	],		//  The caption is not required and may be left blank like this:	//
-['header.php', 	'themes/sudan/ImageChanger/flash/Referendum4.jpg', 	''	],		//  ['URL to linked page', 'URL to image', '']						//
-['header.php', 	'themes/sudan/ImageChanger/flash/Referendum5.jpg', 	''	],		//  Add as many images as you like seperated by commmas				//
-['header.php', 	'themes/sudan/ImageChanger/flash/Referendum6.jpg', 	''	],		//  Almost ALL errors are caused by the url or path being wrong		//
-['header.php', 	'themes/sudan/ImageChanger/flash/Referendum7.jpg', 	''	],		//  The LAST image declaration does NOT have a comma after it		//
-['header.php', 	'themes/sudan/ImageChanger/flash/Referendum8.jpg', 	''	]
+[
+																				//  ['URL to linked page', 'URL to image', 'Caption under picture']	//
+['header.php', 	'themes/sudan/ImageChanger/flash/Referendum2.jpg', 	' '	],		//  The caption is not required and may be left blank like this:		//
+['header.php', 	'themes/sudan/ImageChanger/flash/Referendum3.jpg', 	' '	],		//  ['URL to linked page', 'URL to image', '']							//
+['header.php', 	'themes/sudan/ImageChanger/flash/Referendum4.jpg', 	' '	],		//  Add as many images as you like seperated by commmas					//
+['header.php', 	'themes/sudan/ImageChanger/flash/Referendum5.jpg', 	' '	],		//  Almost ALL errors are caused by the url or path being wrong 		//
+['header.php', 	'themes/sudan/ImageChanger/flash/Referendum6.jpg', 	' '	],
+['header.php', 	'themes/sudan/ImageChanger/flash/Referendum7.jpg', 	' '	],		//  The LAST image declaration does NOT have a comma after it			//
+['header.php', 	'themes/sudan/ImageChanger/flash/Referendum8.jpg', 	' '	]
 ];
 
 var ImageCount		= 7;			//  *****  Change this to the total number of images loaded above  ***** 		//	
-var ImageDelay		= 10000;		//  *****  Set this to the delay interval desired.  5000 = 5 seconds.			// 
+var ImageDelay		= 10000;			//  *****  Set this to the delay interval desired.  5000 = 5 seconds.			// 
 var LinkTarget		= "_self"		//  *****  Defines where you want linked page to open. _self, _blank, _top, etc	//
 var ImageIndex		= 0;			//  DO NOT ALTER	//
 var FirstLoad 		= 0;			//  DO NOT ALTER	//

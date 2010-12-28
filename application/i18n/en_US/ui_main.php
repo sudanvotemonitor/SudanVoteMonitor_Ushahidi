@@ -499,6 +499,7 @@
 	'yes' => 'Yes',
 	'yesterday' => 'Yesterday',
 	'zoom_in' => 'Zoom In',
-	'zoom_out' => 'Zoom Out'
+	'zoom_out' => 'Zoom Out',
+	'youtube_channel' => 'YouTube Channel'
 	);
 ?>

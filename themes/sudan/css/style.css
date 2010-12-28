@@ -39,7 +39,7 @@ table.table-list tbody tr td a{
 div#logo{
     border: 0;
     background: #D6E5BC url(../images/SudanVoteReport2010_DEV.png) 100% 0 repeat-x;
-    padding: 32px 375px 110px;
+    padding: 30px 375px 110px;
     float: left;
     margin: 40px 20px 0 0;
 }
@@ -62,7 +62,7 @@ div#MagicImage{
 /* Follow Us on Twitter */
 div#FollowUSonTwitter{
 	float: left;
-	margin: 33px 0 0 185px;
+	margin: 35px 0 0 155px;
 }
 
 /* main menu setup */
@@ -101,6 +101,36 @@ div#middle .layoutright{
     background: #8FC25A;
 }
 
+/* submit incident */
+div.submit-incident{
+    margin: -210px 0 0 0;
+    float: left;
+    width: 155px;
+}
+
+div.submit-incident a{
+    padding: 7px 10px 7px 10px;
+    background: #368C00 url(../images/submit-incident.jpg) 10px 8px no-repeat;
+    color: #FFF;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 14px;
+    text-decoration: none;
+    float: left;
+}
+
+div.submit-incident a:hover{
+    padding: 7px 10px 7px 10px;
+    background: #368C00 url(../images/submit-incident.jpg) 10px 8px no-repeat;
+    color: #FFF;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 14px;
+    text-decoration: none;
+    float: left;
+}
+
+
 /* Category Filter Side Bar */
 .category {
     float:right;
@@ -134,6 +164,7 @@ ul.category-filters li a:hover, ul.category-filters li a.active {
 div.category-title{ 
     font-size:10px;
 }
+
 
 /*-search-*/
 .search_block{
@@ -170,6 +201,31 @@ div#searchbox{
     background: #D6E5BC url(../images/bar-footer.jpg) 50% 0 repeat-x;
     margin: 15px 0 0 0;
     border-color: #ffffff;
+}
+
+/* content blocks */
+div.content-container{
+    padding: 15px;
+    background: #8FC25A;
+}
+
+div.content-block-left{
+    padding: 15px;
+    background: #FFFFFF;
+    width: 427px;
+    float: left;
+    margin-right: 15px;
+}
+
+div.content-block-left h5 span {
+    font-size: 75%;
+}
+
+div.content-block-right{
+    padding: 15px;
+    background: #FFFFFF;
+    width: 427px;
+    float: right;
 }
 
 /* YouTube Video Player */

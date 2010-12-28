@@ -17,6 +17,11 @@
 		<!-- header -->
 		<div id="header">
 
+			<!-- follow us on twitter -->
+			<div id="FollowUSonTwitter"><a href="http://www.twitter.com/SudanVoteMon"><img src="http://twitter-badges.s3.amazonaws.com/follow_us-b.png" alt="Follow SudanVoteMon on Twitter"/></a>
+			</div>
+			<!-- / follow us on twitter -->
+
 			<!-- searchbox -->
 			<div id="searchbox">
 				<!-- languages -->
@@ -32,10 +37,13 @@
 
 			<!-- logo -->
 			<div id="logo">
-				<h1><?php echo $site_name; ?></h1>
-				<span><?php echo $site_tagline; ?></span>
 			</div>
 			<!-- / logo -->
+			
+			<!-- rolling picture -->
+			<script language="JavaScript" src="themes/sudan/ImageChanger/magicimage.js" type="text/javascript"></script>
+			<div id="MagicImage"></div>
+			<!-- / rolling picture -->			
 			
 			<!-- submit incident -->
 			<?php echo $submit_btn; ?>
