@@ -272,7 +272,7 @@ class Forms_Controller extends Admin_Controller
 			$post->add_rules('form_id','required', 'numeric');
 			$post->add_rules('field_type','required', 'numeric');
 			$post->add_rules('field_name','required', 'length[3,100]');
-			$post->add_rules('field_default', 'length[3,200]');
+			$post->add_rules('field_default', 'length[3,500]');
 			$post->add_rules('field_required','required', 'between[0,1]');
 			$post->add_rules('field_width', 'between[0,300]');
 			$post->add_rules('field_height', 'between[0,50]');
@@ -520,26 +520,19 @@ class Forms_Controller extends Admin_Controller
 
 		$html ="<div class=\"forms_item\">"; 
 		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_submit')."</strong><br />";
-		if ($field_ispublic_submit != 1)
-		{
-			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'0');
-		}
+		if (isset($field_ispublic_submit))
+			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,$field_ispublic_submit);
 		else
-		{
-			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'1');
-		}
+			$html .=  form::dropdown('field_ispublic_submit',$visibility_selection,'0');
+
 		$html .="</div>";
 		
 		$html .="<div class=\"forms_item\">"; 
 		$html .="	<strong>".Kohana::lang('ui_admin.ispublic_visible')."</strong><br />";
-		if ($field_ispublic_visible != 1)
-		{
-			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'0');
-		}
+		if (isset($field_ispublic_visible))
+			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,$field_ispublic_visible);
 		else
-		{
-			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'1');
-		}
+			$html .=  form::dropdown('field_ispublic_visible',$visibility_selection,'0');
 		$html .="</div>";
 
 		return $html;
