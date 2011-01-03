@@ -94,11 +94,17 @@ class customforms_Core {
 	/**
 	 * Validate Custom Form Fields
 	 * @param array $custom_fields Array
+	 * XXX This whole function is being done backwards
+	 * Need to pull the list of custom form fields first
+	 * Then look through them to see if they're set, not the other way around.
 	 */
 	public function validate_custom_form_fields(&$post)
 	{
 		$errors = array();
 		$custom_fields = array();
+
+		if (!isset($post->custom_field))
+			return;
 
 		/* XXX Checkboxes hackery 
 			 Checkboxes are submitted in the post as custom_field[field_id-boxnum]
@@ -107,9 +113,6 @@ class customforms_Core {
 			 To get around that the view sets a hidden custom_field[field_id-BLANKHACK] field that 
 			 ensures the checkbox custom_field is there to be tested.
 		*/
-		if (!isset($post->custom_field))
-			return;
-
 		foreach ($post->custom_field as $field_id => $field_response)
 		{
 			$split = explode("-", $field_id);
@@ -119,8 +122,8 @@ class customforms_Core {
 				if ($split[1] == 'BLANKHACK')
 				{
 					if(!isset($custom_fields[$split[0]]))
-					{
-						$custom_fields[$split[0]] = 'BLANKHACK';	
+					{ // then no checkboxes were checked
+						$custom_fields[$split[0]] = '';	
 						continue;
 					}
 					else
@@ -131,7 +134,6 @@ class customforms_Core {
 					$custom_fields[$split[0]] .= ",$field_response";
 				else
 					$custom_fields[$split[0]] = $field_response;
-
 			}
 			else
 				$custom_fields[$split[0]] = $field_response;
@@ -188,7 +190,7 @@ class customforms_Core {
 				}
 				$responses = explode(',',$field_response);
 				foreach($responses as $response)
-					if( ! in_array($response, $options) && $response != 'BLANKHACK')
+					if( ! in_array($response, $options) && $response != '')
 						array_push($errors,"The $custom_name field does not include $response as an option");
 			}
 
