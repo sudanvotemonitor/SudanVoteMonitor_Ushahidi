@@ -155,8 +155,11 @@ class Main_Controller extends Template_Controller {
 			$children = array();
 			foreach ($category->children as $child)
 			{
-				// Check for localization of child category
+				// Skip hidden child categories
+				if($child->category_visible != 1)
+					continue;
 
+				// Check for localization of child category
 				$translated_title = Category_Lang_Model::category_title($child->id,$l);
 
 				if($translated_title)
