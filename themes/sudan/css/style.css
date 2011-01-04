@@ -167,9 +167,6 @@ ul.category-filters li a:hover, ul.category-filters li a.active {
 div.category-title{ 
     font-size:6px;
 }
-/* ------------------*/
-
-
 ul.category-filters li{
     padding: 0;
     margin-bottom: 2px;
@@ -194,8 +191,6 @@ ul.category-filters li a{
 ul.category-filters li.child{
 	display:none;
 }
-
-/* ------------------*/
 
 /*-search-*/
 .search_block{
