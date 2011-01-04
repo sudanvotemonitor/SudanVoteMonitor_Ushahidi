@@ -26,6 +26,7 @@ class Clickatell_Controller extends Controller {
 	
 	function index($key = NULL)
 	{
+
 		if (isset($this->request['from']))
 		{
 			$message_from = $this->request['from'];
@@ -42,7 +43,17 @@ class Clickatell_Controller extends Controller {
 		
 		if (isset($this->request['text']))
 		{
-			$message_description = $this->request['text'];
+			# we need to grab the raw query string as was sent to the server, pre-decoding
+			parse_str($_SERVER['QUERY_STRING'], $arr);
+
+			if(isset($this->request['charset']))
+			{
+				$message_description  = ((mb_convert_encoding (urldecode($arr['text']),"UTF-8",$this->request['charset'])));
+			}
+			else 
+			{
+				$message_description = ((mb_convert_encoding (urldecode($arr['text']),"UTF-8", "auto")));
+			}
 		}
 		
 		if ( ! empty($message_from) AND ! empty($message_description))
