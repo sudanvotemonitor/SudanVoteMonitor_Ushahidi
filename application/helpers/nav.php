@@ -59,7 +59,7 @@ class nav_Core {
 		}
 
 		// Blog
-		$menu .= "<li><a href=\"http://www.sudanvotemonitor.com/blog\" ";
+		$menu .= "<li><a href=\"".url::site()."blog\" ";
 		$menu .= ">".Kohana::lang('ui_main.blog')."</a></li>";
 
 		echo $menu;

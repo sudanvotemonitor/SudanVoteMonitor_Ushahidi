@@ -72,7 +72,7 @@
 	'comment_rating' => 'Comment Rating',
 	'configuration_saved' => 'Your Settings Have Been Saved!',
 	'configure' => 'Configure',
-	'contact' => 'Contact Us',
+	'contact' => 'Contact',
 	'contact_code' => 'Security Code',
 	'contact_email' => 'Your E-Mail Address',
 	'contact_message' => 'Message',
