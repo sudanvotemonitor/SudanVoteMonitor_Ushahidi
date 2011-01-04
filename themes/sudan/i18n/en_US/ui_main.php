@@ -1,6 +1,6 @@
 <?php
 	$lang = array(
-	'about' => 'About ',
+	'about' => 'About',
 	'access' => 'Access',
 	'access_limits' => 'Access Limits',
 	'account_name' => 'Account Name',

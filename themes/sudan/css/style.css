@@ -72,6 +72,7 @@ div#mainmenu{
 
 div#mainmenu a{
     color: #335509;
+	font-size: 100%;
 }
 
 div#mainmenu a:hover{
@@ -145,6 +146,8 @@ ul.category-filters{
     background: #548335;
     border-top-color: #548335;
     border-bottom-color: #548335;
+    list-style: none;
+    padding: 12px 15px;
 }
 ul.category-filters li a{
     color: #335509;
@@ -162,9 +165,37 @@ ul.category-filters li a:hover, ul.category-filters li a.active {
     height:10px;
 }
 div.category-title{ 
-    font-size:10px;
+    font-size:6px;
+}
+/* ------------------*/
+
+
+ul.category-filters li{
+    padding: 0;
+    margin-bottom: 2px;
+	list-style-type:none;
 }
 
+ul.category-filters li a{
+    display: block;
+    padding: 8px 10px 8px 5px;
+/*    padding: 8px 10px 8px 35px; maxf change */
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-decoration: none;
+    color: #3F3F3F;
+    border: #E7E3DA 1px solid;
+    position: relative;
+    line-height: 17px;
+    overflow: hidden;
+}
+
+ul.category-filters li.child{
+	display:none;
+}
+
+/* ------------------*/
 
 /*-search-*/
 .search_block{
@@ -227,6 +258,59 @@ div.content-block-right{
     width: 427px;
     float: right;
 }
+
+/* map */
+div.map {
+    border: #999 1px solid;
+    width: 573px;
+    height: 900px;
+	position:relative;
+}
+#mapStatus
+{
+	float: left;
+	background-color: #e1e1e1;
+	border-left: solid 1px #999;
+	border-right: solid 1px #999;
+	border-bottom: solid 1px #999;
+	font-size: 10px;
+	width: 573px;
+}
+#mapStatus div
+{
+	float: left;
+	display: inline-block;
+	padding: 4px 6px 4px 6px;
+}
+#mapOutput sup
+{
+	height: 0;
+	line-height: 1;
+	vertical-align: text-top;
+	_vertical-align: text-top;
+	position: relative;
+	font-size: 8px;
+}
+
+
+div.graph-holder {
+    height:150px;
+    overflow:hidden;
+    width:573px;
+}
+
+div.slider-holder {
+    font-size:70%;
+    height:70px;
+    margin-top:15px;
+    width:554px;
+    padding-left: 11px;
+}
+
+div.slider-holder label{
+    color: #666666;
+}
+
 
 /* YouTube Video Player */
 div#youtube_video{
