@@ -38,7 +38,7 @@ table.table-list tbody tr td a{
 /* logo setup */
 div#logo{
     border: 0;
-    background: #D6E5BC url(../images/SudanVoteReport2010.png) 100% 0 repeat-x;
+    background: #D6E5BC url(../images/SudanVoteReport2010_DEV.png) 100% 0 repeat-x;
     padding: 30px 375px 110px;
     float: left;
     margin: 40px 20px 0 0;
