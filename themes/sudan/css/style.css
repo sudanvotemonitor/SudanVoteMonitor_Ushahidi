@@ -254,10 +254,53 @@ div.content-block-right{
     float: right;
 }
 
+/* right column */
+div#right{
+    width: 245px;
+    padding: 0px 0px 0px 0px;
+    float: right;
+}
+
+/* right column (width: 50%) */
+div#equalright{
+    width: 50%;
+    padding: 0px 0px 0px 0px;
+    float: right;
+}
+
+/* content column */
+div#main{
+    width: auto;
+    margin: 0px 0px 0px 0px;
+    padding: 10px 15px;
+}
+
+div#mainmiddle{
+    margin: 0px 0px 0px 0px;
+}
+
+div#main .withoutright{
+    background: transparent;
+}
+
+div#content{
+    width: auto;
+}
+
+div#main .withright div#content{
+    margin: 0px 265px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+div#main .withoutright div#content{
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
 /* map */
 div.map {
     border: #999 1px solid;
-    width: 573px;
+    width: 970px;
     height: 900px;
 	position:relative;
 }
@@ -269,7 +312,7 @@ div.map {
 	border-right: solid 1px #999;
 	border-bottom: solid 1px #999;
 	font-size: 10px;
-	width: 573px;
+	width: 970px;
 }
 #mapStatus div
 {
@@ -287,23 +330,22 @@ div.map {
 	font-size: 8px;
 }
 
-
 div.graph-holder {
     height:150px;
     overflow:hidden;
-    width:573px;
+    width:970px;
 }
 
 div.slider-holder {
     font-size:70%;
     height:70px;
     margin-top:15px;
-    width:554px;
+    width:970px;
     padding-left: 11px;
 }
 
 div.slider-holder label{
-    color: #666666;
+    color: #336600;
 }
 
 
