@@ -72,6 +72,23 @@ class customforms_Core {
 
 
 	/**
+	 * Returns a list of the field names and values for a given userlevel
+	 * @param int $id incident id
+	 * @param int $user_level the user's role level
+	 */
+	public function view_everything($id,$user_level)
+	{
+		$db = new Database();
+		$db->select('form_response.form_response', 'form_field.field_name');
+		$db->from('form_response');
+		$db->join('form_field','form_response.form_field_id','form_field.id');
+		$db->where(array('form_response.incident_id'=>$id,'form_field.field_ispublic_visible <='=>$user_level));
+		$db->orderby('form_field.field_position');
+		$custom_fields = $db->get();
+		return $custom_fields;
+	}
+
+	/**
 	 * Returns the user's maximum role id number
 	 * @param array $user the current user object
 	 */
