@@ -18,10 +18,12 @@ class ReportsImporter {
 		$this->categories_added = array();
 		$this->locations_added = array();
 		$this->incident_categories_added = array();
+		$this->custom_fields_added = array();
 	}
 	function import($filehandle) {
 		$csvtable = new Csvtable($filehandle);
 		$requiredcolumns = array('INCIDENT TITLE','INCIDENT DATE');
+		$standardcolumns = array('INCIDENT TITLE','INCIDENT DATE','#','LOCATION','DESCRIPTION','CATEGORY','APPROVED','VERIFIED');
 		foreach($requiredcolumns as $requiredcolumn)
 		{
 			if(!$csvtable->hasColumn($requiredcolumn))
@@ -118,7 +120,8 @@ class ReportsImporter {
 			$categorynames = explode(',',trim($row['CATEGORY']));
 			foreach($categorynames as $categoryname)
 			{
-				$categoryname = strtoupper(trim($categoryname)); // There seems to be an uppercase convention for categories... Don't know why.
+				// Uppercasing categories screws up re-importing, no idea why it was done initially, I'm commenting it out now. --gc
+				//$categoryname = strtoupper(trim($categoryname)); // There seems to be an uppercase convention for categories... Don't know why.
 				if($categoryname != '')
 				{
 					if(!isset($this->category_ids[$categoryname]))
@@ -142,6 +145,41 @@ class ReportsImporter {
 				} // empty categoryname not allowed
 			} // add categories to incident
 		} // if CATEGORIES column exists
+
+		// STEP 4: SAVE CUSTOM FIELDS
+		if (isset($row['FORM NAME']))
+		{
+			// Look up the form name
+			$formname = ORM::factory('form')->where('form_title',$row['FORM NAME'])->find(1);
+			if(isset($formname->id))
+			{
+				// Retreive the form fields this user can submit
+				$custom_forms = customforms::get_custom_form_fields('',$formname->id,false, "submit");
+				foreach($custom_forms as $form_field)
+				{
+					$ff = strtoupper(trim($form_field['field_name'])); // continuing the uppercase convention for column names...
+					// XXX:  need to think some more about validation.
+					$rowdata = '';
+					if(isset($row[$ff]))
+						$rowdata = $row[$ff];
+					elseif(isset($row[$form_field['field_name']]))
+						$rowdata = $row[$form_field['field_name']];
+					
+					if($rowdata != ''){
+						$field_response = new Form_Response_Model;					
+						$field_response->form_response = $rowdata;
+						$field_response->incident_id = $incident->id;
+						$field_response->form_field_id = $form_field['field_id'];
+						$field_response->save();
+						$this->custom_fields_added[] = $field_response->id;
+					}
+				} // each form field
+			} // formname->id exists
+		} // if FORM NAME
+
+		// STEP 5:  CALL INCIDENT EDIT ACTION
+		// XXX: may need to run report_edit if incident modifications have been enabled
+		Event::run('ushahidi_action.report_add', $incident);
 		return true;
 	}
 }

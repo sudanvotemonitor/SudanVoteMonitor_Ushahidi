@@ -72,6 +72,23 @@ class customforms_Core {
 
 
 	/**
+	 * Returns a list of the field names and values for a given userlevel
+	 * @param int $id incident id
+	 * @param int $user_level the user's role level
+	 */
+	public function view_everything($id,$user_level)
+	{
+		$db = new Database();
+		$db->select('form_response.form_response', 'form_field.field_name');
+		$db->from('form_response');
+		$db->join('form_field','form_response.form_field_id','form_field.id');
+		$db->where(array('form_response.incident_id'=>$id,'form_field.field_ispublic_visible <='=>$user_level));
+		$db->orderby('form_field.field_position');
+		$custom_fields = $db->get();
+		return $custom_fields;
+	}
+
+	/**
 	 * Returns the user's maximum role id number
 	 * @param array $user the current user object
 	 */
@@ -94,11 +111,17 @@ class customforms_Core {
 	/**
 	 * Validate Custom Form Fields
 	 * @param array $custom_fields Array
+	 * XXX This whole function is being done backwards
+	 * Need to pull the list of custom form fields first
+	 * Then look through them to see if they're set, not the other way around.
 	 */
 	public function validate_custom_form_fields(&$post)
 	{
 		$errors = array();
 		$custom_fields = array();
+
+		if (!isset($post->custom_field))
+			return;
 
 		/* XXX Checkboxes hackery 
 			 Checkboxes are submitted in the post as custom_field[field_id-boxnum]
@@ -107,9 +130,6 @@ class customforms_Core {
 			 To get around that the view sets a hidden custom_field[field_id-BLANKHACK] field that 
 			 ensures the checkbox custom_field is there to be tested.
 		*/
-		if (!isset($post->custom_field))
-			return;
-
 		foreach ($post->custom_field as $field_id => $field_response)
 		{
 			$split = explode("-", $field_id);
@@ -119,8 +139,8 @@ class customforms_Core {
 				if ($split[1] == 'BLANKHACK')
 				{
 					if(!isset($custom_fields[$split[0]]))
-					{
-						$custom_fields[$split[0]] = 'BLANKHACK';	
+					{ // then no checkboxes were checked
+						$custom_fields[$split[0]] = '';	
 						continue;
 					}
 					else
@@ -131,7 +151,6 @@ class customforms_Core {
 					$custom_fields[$split[0]] .= ",$field_response";
 				else
 					$custom_fields[$split[0]] = $field_response;
-
 			}
 			else
 				$custom_fields[$split[0]] = $field_response;
@@ -188,7 +207,7 @@ class customforms_Core {
 				}
 				$responses = explode(',',$field_response);
 				foreach($responses as $response)
-					if( ! in_array($response, $options) && $response != 'BLANKHACK')
+					if( ! in_array($response, $options) && $response != '')
 						array_push($errors,"The $custom_name field does not include $response as an option");
 			}
 
