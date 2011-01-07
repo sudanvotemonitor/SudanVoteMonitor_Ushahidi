@@ -92,7 +92,7 @@ class Imap_Core {
 		//   can fail and that's no good.
 		$msg_to_pull = $no_of_msgs;
 		if($msg_to_pull > $max_imap_messages){
-			$msg_to_pull = $max_imap_messages;
+		//	$msg_to_pull = $max_imap_messages;
 		}
 
 		$messages = array();
