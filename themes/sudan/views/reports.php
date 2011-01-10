@@ -21,7 +21,7 @@
 					// Trim to 150 characters without cutting words
 					// XXX: Perhaps delcare 150 as constant
 
-					$incident_description = text::limit_chars(strip_tags($incident_description), 150, "...", true);
+					//$incident_description = text::limit_chars(strip_tags($incident_description), 150, "...", true);
 					$incident_date = date('H:i M d, Y', strtotime($incident->incident_date));
 					//$incident_time = date('H:i', strtotime($incident->incident_date));
 					$location_id = $incident->location_id;
