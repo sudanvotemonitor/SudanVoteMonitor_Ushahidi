@@ -85,6 +85,10 @@
 			</table>
 			<input id="save_only" type="image" src="<?php print url::base() ?>media/img/admin/btn-download.gif" class="save-rep-btn" />
 			<?php print form::close(); ?>
+
+<p><br /><br /></p><br/>
+<a href="<?php print url::base() ?>kml2">Google Earth / KML Format</a>
+
 		</div>
 	</div>
 </div>
