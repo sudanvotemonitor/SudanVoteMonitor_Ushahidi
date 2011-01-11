@@ -65,19 +65,21 @@ function genKML($name, $categories, $cat_to_subcats, $subcat_to_incidents, $cat_
 
 	}
 
-	$kmlRest = "";
+$kmlRest = "";
 	// for every category_id->[incidents] entry, generate one <Folder> per category, one <Folder>
 	// per sub-category, and then one <Placemark> per incident
 	// by default, all folders are closed, and all placemarks not visible
 	foreach ($cat_to_subcats as $cat_id => $subcats) {
+
+
 		$kmlRest .= "<Folder id ='$cat_id'>" . PHP_EOL
 		. "  <visibility>1</visibility>" . PHP_EOL
 		. "  <open>0</open>"  . PHP_EOL;
-			
+
 		$cat = $catid_to_cat[$cat_id];
 		$kmlRest .= "<name>$cat->category_title</name>" .  PHP_EOL
 		. "<description>$cat->category_description</description>";
-			
+
 		// for every subcategory, create a sub-folder and add any incidents to it
 		foreach($subcats as $subcat) {
 			$kmlRest .= "<Folder id = '$subcat->id'>" . PHP_EOL
@@ -94,6 +96,9 @@ function genKML($name, $categories, $cat_to_subcats, $subcat_to_incidents, $cat_
 			}
 			$kmlRest .= "</Folder>" . PHP_EOL;
 		}
+
+
+
 		// for every incident in this category and NOT in a sub-category, add it
 		if(isset($cat_incidents[$cat->id])) {
 			foreach ($cat_incidents[$cat_id] as $incident){
@@ -102,6 +107,7 @@ function genKML($name, $categories, $cat_to_subcats, $subcat_to_incidents, $cat_
 		}
 		$kmlRest .= "</Folder>" . PHP_EOL;
 	}
+
 	$kml .= $kmlStyles . $kmlRest;
 	$kml .= "</Document>" . PHP_EOL
 	.  "</kml>". PHP_EOL;
@@ -111,7 +117,6 @@ function genKML($name, $categories, $cat_to_subcats, $subcat_to_incidents, $cat_
 $kml = genKML($kml2_name, $categories, $cat_to_subcats,$subcat_to_incidents, $cat_incidents);
 $kmz = create_kmz($kml);
 readfile(Kohana::config('upload.directory', TRUE) . "/latest.kmz");
-//echo $kml;
 ?>
 
 

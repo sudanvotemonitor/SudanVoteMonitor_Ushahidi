@@ -39,13 +39,18 @@ class Kml2_Controller extends Controller
 		$categories = array();
 		$cat_to_subcats = array();
 		$subcat_to_incidents = array();
-
+		$cat_ids = array();
 		// Grab all categories and add them to the list
 		foreach(ORM::factory('category')
 		->where('category_visible', '1')
 		->find_all() as $cat) {
 			// all categories
 			array_push($categories, $cat);
+			array_push($cat_ids, $cat->id);
+		}
+
+		// create mappings of categories to subcategories
+		foreach($categories as $cat){
 
 			// top-level category
 			if($cat->parent_id == 0) {
@@ -54,7 +59,8 @@ class Kml2_Controller extends Controller
 					$cat_to_subcats[$cat->id] = array();
 				}
 			}
-			else {
+			// otherwise if this is a (non-orphan) sub-category, map it to its parent
+			else if(in_array($cat->parent_id, $cat_ids)) {
 				// first time, so initialize mapping
 				if(!isset($cat_to_subcats[$cat->parent_id])) {
 					$cat_to_subcats[$cat->parent_id] = array();
@@ -63,15 +69,12 @@ class Kml2_Controller extends Controller
 				array_push($cat_to_subcats[$cat->parent_id], $cat);
 			}
 		}
-
 		// grab all incidents within limit
 		$incidents = ORM::factory('incident')
 		->where('incident_active', '1')
 		->orderby('incident_date', 'desc')
 		->limit($limit)
 		->find_all();
-			
-		//		echo "LIMIT " . $limit;
 
 		// Get the "first" category of each incident, and save both in a map of arrays
 		//  category id -> [incidents]
@@ -81,7 +84,6 @@ class Kml2_Controller extends Controller
 			foreach($incident->category as $cat) {
 				// if it is a sub-category
 				if($cat->parent_id != 0) {
-					//					echo("sub cat id:" . $cat->id . "\n");
 					// first time with this sub-category
 					if(!isset($subcat_to_incidents[$cat->id])) {
 						$subcat_to_incidents[$cat->id] = array();
@@ -110,7 +112,7 @@ class Kml2_Controller extends Controller
 		header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
 		header("Cache-Control: cache, must-revalidate");
 		header("Pragma: public");
-
+		
 		$view = new View("kml2");
 		$view->kml2_name = htmlspecialchars(Kohana::config('settings.site_name'));
 		$view->cat_to_subcats = $cat_to_subcats; //$incidents;
