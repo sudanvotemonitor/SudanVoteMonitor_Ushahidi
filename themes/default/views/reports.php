@@ -2,6 +2,7 @@
 	<div class="content-bg">
 		<!-- start reports block -->
 		<div class="big-block">
+
 			<?php
 			// Filter::report_stats - The block that contains reports list statistics
 			Event::run('ushahidi_filter.report_stats', $report_stats);
@@ -66,7 +67,7 @@
 							
 							<!-- Category Selector -->
 							<div class="r_categories">
-								<h4><?php echo Kohana::lang('ui_main.categories'); ?></h4>
+								<h4>FOO<?php echo Kohana::lang('ui_main.categories'); ?></h4>
 								<?php
 								foreach ($incident->category AS $category)
 								{

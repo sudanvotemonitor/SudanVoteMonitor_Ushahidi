@@ -11,4 +11,9 @@
 			<td><?php echo $percent_verified; ?></td>
 		</tr>
 	</table>
+
+<p><br /><br /></p>
+<a href="<?php print url::base() ?>kml2">Download all reports in Google Earth / KML format</a>
+
+
 </div>

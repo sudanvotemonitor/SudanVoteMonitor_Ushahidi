@@ -1,5 +1,4 @@
 <div id="main" class="report_detail">
-
 	<div class="left-col" style="float:left;width:520px; margin-right:20px">
 	
   	  <?php
@@ -15,7 +14,6 @@
 
 		<h1 class="report-title"><?php
 			echo $incident_title;
-			
 			// If Admin is Logged In - Allow For Edit Link
 			if ($logged_in)
 			{

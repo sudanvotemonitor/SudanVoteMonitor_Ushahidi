@@ -187,6 +187,14 @@
 				echo $div_timeline;
 				?>
 <p><br /><br /></p>
+<h2>Download All SVM Reports</h2>
+<ul>
+<li><a href="kml2">Google Earth / KML Format</a></li>
+</ul>
+
+
+
+<p><br /><br /></p>
 <h3>Polling Stations</h3>
 <iframe width="650px" height="500px" scrolling="no"  src="http://www.google.com/fusiontables/embedviz?viz=MAP&q=select+col2%2C+col0%2C+col1%2C+col3%2C+col4%2C+col5%2C+col6%2C+col7%2C+col8+from+385761+&h=false&lat=12.683214911818666&lng=32.9150390625&z=5&t=1&l=col4"></iframe>
 <h2>Download Polling Stations Information</h2>
